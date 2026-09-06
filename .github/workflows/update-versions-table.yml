@@ -146,8 +146,8 @@ jobs:
          
          # Use the token directly in the remote URL
          
-         git remote set-url origin "https://${GH_TOKEN}@github.com/MItchPisa76/MFPCrawler-distribution.git"
-         #git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/MItchPisa76/MFPCrawler-distribution.git"
+         #git remote set-url origin "https://${GH_TOKEN}@github.com/MItchPisa76/MFPCrawler-distribution.git"
+         git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/MItchPisa76/MFPCrawler-distribution.git"
          
          if git diff --quiet README.md .github/workflows/generate-custom-installer.yml 2>/dev/null; then
            echo "ℹ️ Nessun cambiamento nei file"
