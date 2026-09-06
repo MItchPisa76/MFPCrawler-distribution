@@ -60,8 +60,9 @@ jobs:
         
         # Legge le release e genera le righe
         while IFS='|' read -r tag publishedAt; do
-          # Formato: v1.5.2 → Genera v1.5.2
-          BADGE="[![Genera ${tag}](https://img.shields.io/badge/Genera%20${tag//./\.}-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=${tag})"
+          # URL-encode il tag (sostituisci i punti con %2E per lo shield badge)
+          ENCODED_TAG="${tag//./%2E}"
+          BADGE="[![Genera ${tag}](https://img.shields.io/badge/Genera%20${ENCODED_TAG}-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=${tag})"
           ROW="| ${tag} | ✅ Disponibile | ${BADGE} |"
           TABLE_CONTENT="${TABLE_CONTENT}"$'\n'"${ROW}"
         done <<< "${{ steps.fetch-releases.outputs.releases }}"
@@ -82,39 +83,13 @@ jobs:
           exit 1
         fi
         
-        # Crea un file temporaneo per la sostituzione
-        # Legge fino al marker "### Versioni Disponibili"
-        # Sostituisce il contenuto della tabella fino al prossimo ---
+        # Estrae il contenuto della tabella generata
+        TABLE_CONTENT="${{ steps.generate-table.outputs.table }}"
         
-        awk '
-          /^### Versioni Disponibili$/ {
-            print $0
-            print ""
-            print "| Versione | Stato | Azione |"
-            print "| :--- | :--- | :--- |"
-            # Salta le righe fino al prossimo ---
-            getline
-            while ($0 !~ /^---$/ && NF > 0) {
-              getline
-            }
-            next
-          }
-          { print }
-        ' README.md > README.md.tmp
+        # Usa perl per sostituire la sezione della tabella tra i marker
+        # Cerca "### Versioni Disponibili" e sostituisce fino al prossimo "---"
+        perl -i -0pe 's/(### Versioni Disponibili\s*\n)(.*?)(\n---)/\1'"${TABLE_CONTENT//&/\\&}"'\3/s' README.md
         
-        # Sostituisci con il nuovo contenuto della tabella
-        sed -i "/^### Versioni Disponibili$/,/^---$/{
-          /^### Versioni Disponibili$/a\\
-| Versione | Stato | Azione |\\
-| :--- | :--- | :--- |\\
-| v1.5.2 | ✅ Disponibile | [![Genera v1.5.2](https://img.shields.io/badge/Genera%20v1.5.2-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml) |\\
-| v1.5.1 | ✅ Disponibile | [![Genera v1.5.1](https://img.shields.io/badge/Genera%20v1.5.1-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml) |\\
-| v1.5.0 | ✅ Disponibile | [![Genera v1.5.0](https://img.shields.io/badge/Genera%20v1.5.0-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml) |\\
-| v1.4.8 | ✅ Disponibile | [![Genera v1.4.8](https://img.shields.io/badge/Genera%20v1.4.8-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml) |\\
-| v1.4.7 | ✅ Disponibile | [![Genera v1.4.7](https://img.shields.io/badge/Genera%20v1.4.7-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml) |
-        }" README.md
-        
-        rm -f README.md.tmp
         echo "✅ README.md aggiornato con le nuove release"
 
     - name: 📤 Commit e Push
