@@ -73,7 +73,7 @@
                     <input>target</input>
                     <destination>target/dist</destination>
                     <type>exe</type>
-                    <icon>${project.basedir}/src/main/resources/icon.ico</icon>
+                    <icon>src/main/resources/icon.ico</icon>
                     <runtimeImage>${project.build.directory}/image</runtimeImage>
                     <javaOptions>
                         <option>-Dfile.encoding=UTF-8</option>
