@@ -42,7 +42,7 @@
                         <goals><goal>jlink</goal></goals>
                         <phase>package</phase>
                         <configuration>
-                            <outputDirectory>/image</outputDirectory>
+                            <outputDirectory>image</outputDirectory>
                             <compress>2</compress>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
