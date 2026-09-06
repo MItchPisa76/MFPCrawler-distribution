@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>mtc.MFPCrawler</groupId>
+	<artifactId>MFPCrawler</artifactId>
+	<version>1.0.0</version>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.panteleyev</groupId>
+				<artifactId>jpackage-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<configuration>
+					<name>MFPCrawler</name>
+					<appVersion>1.0.0</appVersion>
+					<vendor>Mitch Pisa</vendor>
+					<description>Find SNMP MFP in local network</description>
+					<mainClass>mtc.MFPCrawler.MFPCrawler</mainClass>
+					<mainJar>MFPCrawler-fat.jar</mainJar>
+					<input>target</input>
+					<destination>target/dist</destination>
+					<type>EXE</type>
+					<icon>${project.basedir}/src/main/resources/icon.ico</icon>
+					<runtimeImage>${java.home}</runtimeImage>
+
+					<!-- Impostazioni di Installazione di Sistema -->
+					<winMenu>true</winMenu>
+					<winMenuGroup>MFPCrawler</winMenuGroup>
+					<winShortcut>true</winShortcut>
+					<winDirChooser>true</winDirChooser>
+					<winPerUserInstall>false</winPerUserInstall>
+					<winShortcutPrompt>true</winShortcutPrompt>
+					<winConsole>false</winConsole>
+
+					<javaOptions>
+						<option>-Dfile.encoding=UTF-8</option>
+					</javaOptions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
