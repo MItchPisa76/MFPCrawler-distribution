@@ -20,7 +20,28 @@ permissions:
   contents: write
 
 jobs:
+  validate-release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Valida che il tag esista nel repository privato
+      env:
+        GH_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
+      run: |
+        TAG="${{ inputs.target_version }}"
+        echo "🔍 Verifica della release: $TAG nel repository privato..."
+        
+        if gh release view "$TAG" --repo "MitchPisa76/MFPCrawler-Private" 2>/dev/null; then
+          echo "✅ Release $TAG trovata nel repository privato"
+        else
+          echo "❌ Release $TAG NON trovata nel repository privato"
+          echo ""
+          echo "📋 Release disponibili nel repository privato:"
+          gh release list --repo "MitchPisa76/MFPCrawler-Private" --limit 20
+          exit 1
+        fi
+
   inject-and-build:
+    needs: validate-release
     runs-on: windows-latest
 
     steps:
