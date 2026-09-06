@@ -60,7 +60,7 @@
                     <appVersion>${project.version}</appVersion>
                     <vendor>Mitch Pisa</vendor>
                     <mainClass>mtc.MFPCrawler.MFPCrawler</mainClass>
-                    <mainJar>your-module-jar-if-needed.jar</mainJar>
+                    <mainJar>MFPCrawler-fat.jar</mainJar>
                     <input>target</input>
                     <destination>target/dist</destination>
                     <type>EXE</type>
