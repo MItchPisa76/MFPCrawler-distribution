@@ -21,12 +21,12 @@ jobs:
     - name: 📥 Checkout repository
       uses: actions/checkout@v4
       with:
-        token: ${{ secrets.PRIVATE_REPO_PAT }}
+        token: ${{ secrets.PRIVATE_MFPCRAWLER_PAT }}
 
     - name: 🔍 Recupera release dal repository privato
       id: fetch-releases
       env:
-        GH_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
+        GH_TOKEN: ${{ secrets.PRIVATE_MFPCRAWLER_PAT }}
       run: |
         LIMIT="${{ inputs.limit || '20' }}"
         echo "⏳ Recupero ultime $LIMIT release dal repository privato..."
@@ -139,7 +139,7 @@ jobs:
         
     - name: 📤 Commit e Push
       env:
-         GH_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
+         GH_TOKEN: ${{ secrets.PRIVATE_MFPCRAWLER_PAT }}
       run: |
          git config user.name "github-actions[bot]"
          git config user.email "github-actions[bot]@users.noreply.github.com"
