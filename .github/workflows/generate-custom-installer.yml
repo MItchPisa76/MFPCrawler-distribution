@@ -6,7 +6,12 @@ on:
       target_version:
         description: 'Tag Versione dal Repo Privato (es. v1.0.0)'
         required: true
-        default: 'v1.0.0'
+        type: choice
+        options:
+          - v1.0.0
+          - v1.1.0
+          - v1.2.0
+          - v2.0.0
       param_a:
         description: 'Dato A per Token (es. ID Cliente)'
         required: true
