@@ -153,6 +153,10 @@ jobs:
            echo "📝 Commit delle modifiche..."
            git add README.md .github/workflows/generate-custom-installer.yml
            git commit -m "docs: aggiornate versioni disponibili da repository privato [skip ci]"
+
+           # Pull latest changes before pushing
+           git pull --rebase origin main
+           
            git push origin main
            echo "✅ Push completato"
          fi
