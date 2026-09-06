@@ -42,7 +42,7 @@
                         <goals><goal>jlink</goal></goals>
                         <phase>package</phase>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/image</outputDirectory>
+                            <outputDirectory>/image</outputDirectory>
                             <compress>2</compress>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
@@ -74,7 +74,7 @@
                     <destination>target/dist</destination>
                     <type>EXE</type>
                     <icon>src/main/resources/icon.ico</icon>
-                    <runtimeImage>${project.build.directory}/image</runtimeImage>
+                    <runtimeImage>/image</runtimeImage>
                     <javaOptions>
                         <option>-Dfile.encoding=UTF-8</option>
                     </javaOptions>
