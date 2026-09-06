@@ -75,7 +75,7 @@ jobs:
         
         # Download del JAR compiled dal repository privato tramite GitHub CLI
         gh release download "$TAG" \
-          --repo "MitchPisa76/MFPCrawler-Private" \
+          --repo "MitchPisa76/MFPCrawler" \
           --pattern "MFPCrawler-fat.jar" \
           --dir target/
 
