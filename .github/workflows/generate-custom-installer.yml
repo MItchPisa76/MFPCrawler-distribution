@@ -108,8 +108,10 @@ jobs:
         git add README.md
         git diff --quiet && git diff --staged --quiet || (git commit -m "docs: aggiornato README per $CLIENT_ID ($TAG_NAME) [skip ci]" && git push)
 
-    - name: Salva l'installer come Artifact scaricabile
-      uses: actions/upload-artifact@v4
+    - name: Pubblica l'exe nella Release
+      uses: softprops/action-gh-release@v2
       with:
-        name: MFPCrawler-${{ inputs.target_version }}-${{ inputs.param_a }}
-        path: target/dist/*.exe
+        tag_name: "${{ inputs.target_version }}.${{ inputs.param_a }}" # Oppure il tuo $TAG_NAME
+        files: target/dist/*.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
