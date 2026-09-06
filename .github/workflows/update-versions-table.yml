@@ -33,7 +33,7 @@ jobs:
         
         # Ottiene la lista di release in formato JSON
         RELEASES=$(gh release list \
-          --repo "MitchPisa76/MFPCrawler-Private" \
+          --repo "MitchPisa76/MFPCrawler" \
           --limit "$LIMIT" \
           --json tagName,publishedAt \
           --jq '.[] | "\(.tagName)|\(.publishedAt)"')
