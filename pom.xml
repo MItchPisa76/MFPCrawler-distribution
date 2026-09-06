@@ -4,24 +4,24 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <groupId>mtc.MFPCrawler</groupId>
     <artifactId>mfpcrawler</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    
+
     <name>MFPCrawler</name>
     <description>MFPCrawler Distribution</description>
-    
+
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
     <build>
         <plugins>
-            <!-- compiler plugin -->
+            <!-- Compiler plugin per Java 17 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -30,27 +30,8 @@
                     <release>${maven.compiler.source}</release>
                 </configuration>
             </plugin>
-            
-            <!-- jlink to create runtime image (output: target/image) -->
-            <plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-jlink-plugin</artifactId>
-    <version>3.2.0</version>
-    <executions>
-        <execution>
-            <id>jlink-image</id>
-            <goals><goal>jlink</goal></goals>
-            <phase>package</phase>
-            <configuration>
-                <skip>true</skip>  <!-- ADD THIS LINE -->
-                <outputDirectory>image</outputDirectory>
-                <!-- rest of config -->
-            </configuration>
-        </execution>
-    </executions>
-</plugin>
- 
-            <!-- jpackage uses the generated image -->
+
+            <!-- jpackage plugin per la creazione dell'installer Windows .exe -->
             <plugin>
                 <groupId>org.panteleyev</groupId>
                 <artifactId>jpackage-maven-plugin</artifactId>
@@ -65,7 +46,10 @@
                     <destination>target/dist</destination>
                     <type>EXE</type>
                     <icon>src/main/resources/icon.ico</icon>
-                   
+
+                    <!-- Include l'ambiente Java di sistema nel pacchetto finale (risolve l'assenza di java.exe) -->
+                    <runtimeImage>${java.home}</runtimeImage>
+
                     <javaOptions>
                         <option>-Dfile.encoding=UTF-8</option>
                     </javaOptions>
