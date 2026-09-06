@@ -72,8 +72,8 @@
                     <mainJar>your-module-jar-if-needed.jar</mainJar>
                     <input>target</input>
                     <destination>target/dist</destination>
-                    <type>exe</type>
-                   
+                    <type>win-exe</type>
+                    <icon>src/main/resources/icon.ico</icon>
                     <runtimeImage>${project.build.directory}/image</runtimeImage>
                     <javaOptions>
                         <option>-Dfile.encoding=UTF-8</option>
