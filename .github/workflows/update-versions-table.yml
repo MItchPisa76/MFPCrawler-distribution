@@ -86,12 +86,20 @@ jobs:
         # Estrae il contenuto della tabella generata
         TABLE_CONTENT="${{ steps.generate-table.outputs.table }}"
         
+        # Salva la tabella in un file temporaneo
+        echo "$TABLE_CONTENT" > /tmp/table_content.txt
+        
         # Usa perl per sostituire la sezione della tabella tra i marker
-        # Cerca "### Versioni Disponibili" e sostituisce fino al prossimo "---"
-        perl -i -0pe 's/(### Versioni Disponibili\s*\n)(.*?)(\n---)/\1'"${TABLE_CONTENT//&/\\&}"'\3/s' README.md
+        perl -i -0pe '
+          open(my $fh, "<", "/tmp/table_content.txt") or die "Cannot open file: $!";
+          my $table = do { local $/; <$fh> };
+          close($fh);
+          $table =~ s/\$/\\\$/g;  # Escape dollar signs
+          $table =~ s/\\/\\\\/g;  # Escape backslashes
+          s/(### Versioni Disponibili\s*\n)(.*?)(\n---)/\1$table\3/s;
+        ' README.md
         
         echo "✅ README.md aggiornato con le nuove release"
-
     - name: 📤 Commit e Push
       run: |
         git config user.name "github-actions[bot]"
