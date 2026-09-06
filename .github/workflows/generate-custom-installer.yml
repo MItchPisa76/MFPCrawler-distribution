@@ -8,9 +8,11 @@ on:
         required: true
         type: choice
         options:
+          - NTY
           - NEWT
           - V-new
           - v1.0.0-manual
+
 
       param_a:
         description: 'Dato A per Token (es. ID Cliente)'
