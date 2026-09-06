@@ -1,0 +1,112 @@
+name: Genera Installer Personalizzato
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_version:
+        description: 'Tag Versione dal Repo Privato (es. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+      param_a:
+        description: 'Dato A per Token (es. ID Cliente)'
+        required: true
+        default: 'CLIENT_001'
+      param_b:
+        description: 'Dato B per Token (es. Licenza)'
+        required: true
+        default: 'KEY_ABC123'
+
+permissions:
+  contents: write
+
+jobs:
+  build-installer:
+    runs-on: windows-latest
+
+    steps:
+    - name: Controlla repository pubblico
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configura Java (JDK 21 x64)
+      uses: actions/setup-java@v5
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        architecture: x64
+
+    - name: Prepara cartella target
+      run: mkdir -p target
+
+    - name: Scarica Fat JAR dal Repository Privato
+      env:
+        GH_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
+      shell: bash
+      run: |
+        TAG="${{ inputs.target_version }}"
+        echo "Download del Fat JAR dalla release $TAG del repository privato..."
+        
+        # Usa GitHub CLI per scaricare l'asset dal repo privato
+        gh release download "$TAG" \
+          --repo "MitchPisa76/MFPCrawler-Private" \
+          --pattern "MFPCrawler-fat.jar" \
+          --dir target/
+
+    - name: Importa certificato SSL nel cacerts della JDK
+      shell: bash
+      run: |
+        if [ -n "${{ secrets.LOCAL_SERVER_CERT }}" ]; then
+          mkdir -p src/main/resources/certs
+          echo "${{ secrets.LOCAL_SERVER_CERT }}" > src/main/resources/cert.pem
+          
+          "$JAVA_HOME/bin/keytool" -importcert -alias resolve-server \
+            -file "src/main/resources/cert.pem" \
+            -keystore "$JAVA_HOME/lib/security/cacerts" \
+            -storepass changeit -noprompt
+        fi
+
+    - name: Genera Token ed Inietta nel Fat JAR
+      shell: bash
+      run: |
+        PARAM_A="${{ inputs.param_a }}"
+        PARAM_B="${{ inputs.param_b }}"
+        
+        # Genera la stringa Base64
+        RAW_STRING="${PARAM_A}:${PARAM_B}"
+        GENERATED_TOKEN=$(echo -n "$RAW_STRING" | base64)
+        
+        # Scrive il token.properties
+        echo "app.token=$GENERATED_TOKEN" > token.properties
+        
+        # Inietta direttamente il file dentro il JAR scaricato
+        "$JAVA_HOME/bin/jar" uf target/MFPCrawler-fat.jar token.properties
+        echo "Token iniettato con successo dentro target/MFPCrawler-fat.jar"
+
+    - name: Impacchetta Installer .exe con jpackage
+      run: mvn jpackage:jpackage
+
+    - name: Aggiungi nuova voce al README.md
+      shell: bash
+      run: |
+        TAG_NAME="${{ inputs.target_version }}"
+        RELEASE_DATE=$(date +'%Y-%m-%d %H:%M')
+        EXE_FILE=$(basename $(ls target/dist/*.exe | grep -v 'temp' | head -n 1))
+        
+        # Prepara il link del file generato
+        DOWNLOAD_URL="https://github.com/MitchPisa76/MFPCrawler/releases/download/$TAG_NAME/$EXE_FILE"
+        NEW_ROW="| **$TAG_NAME** | $RELEASE_DATE | [⚡ Scarica $EXE_FILE]($DOWNLOAD_URL) |"
+        
+        # Inserimento in cima subito sotto la riga marcatore
+        sed -i "/<!-- DOWNLOAD_TABLE_MARKER -->/a $NEW_ROW" README.md
+        
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add README.md
+        git diff --quiet && git diff --staged --quiet || (git commit -m "docs: aggiornato README per la build $TAG_NAME [skip ci]" && git push)
+
+    - name: Salva l'installer come Artifact scaricabile
+      uses: actions/upload-artifact@v4
+      with:
+        name: MFPCrawler-${{ inputs.target_version }}-${{ inputs.param_a }}
+        path: target/dist/*.exe
