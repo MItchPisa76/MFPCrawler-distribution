@@ -30,13 +30,13 @@ jobs:
         TAG="${{ inputs.target_version }}"
         echo "🔍 Verifica della release: $TAG nel repository privato..."
         
-        if gh release view "$TAG" --repo "MitchPisa76/MFPCrawler-Private" 2>/dev/null; then
+        if gh release view "$TAG" --repo "MitchPisa76/MFPCrawler" 2>/dev/null; then
           echo "✅ Release $TAG trovata nel repository privato"
         else
           echo "❌ Release $TAG NON trovata nel repository privato"
           echo ""
           echo "📋 Release disponibili nel repository privato:"
-          gh release list --repo "MitchPisa76/MFPCrawler-Private" --limit 20
+          gh release list --repo "MitchPisa76/MFPCrawler" --limit 20
           exit 1
         fi
 
