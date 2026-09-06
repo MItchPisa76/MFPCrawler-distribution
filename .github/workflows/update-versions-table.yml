@@ -135,7 +135,6 @@ jobs:
         ' "$WORKFLOW_FILE"
         
         echo "✅ File aggiornato con le nuove versioni"
-
     - name: 📤 Commit e Push
       env:
          GH_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
