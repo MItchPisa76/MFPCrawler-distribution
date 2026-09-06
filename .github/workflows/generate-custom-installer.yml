@@ -85,26 +85,28 @@ jobs:
 
     - name: Impacchetta Installer .exe con jpackage
       run: mvn jpackage:jpackage
-
-    - name: Aggiungi nuova voce al README.md
+    - name: Aggiorna il README.md con Data, Versione e Cliente
       shell: bash
       run: |
         TAG_NAME="${{ inputs.target_version }}"
+        CLIENT_ID="${{ inputs.param_a }}"
         RELEASE_DATE=$(date +'%Y-%m-%d %H:%M')
         EXE_FILE=$(basename $(ls target/dist/*.exe | grep -v 'temp' | head -n 1))
         
-        # Prepara il link del file generato
+        # Costruzione del link (Artifact o Release)
         DOWNLOAD_URL="https://github.com/MitchPisa76/MFPCrawler/releases/download/$TAG_NAME/$EXE_FILE"
-        NEW_ROW="| **$TAG_NAME** | $RELEASE_DATE | [⚡ Scarica $EXE_FILE]($DOWNLOAD_URL) |"
         
-        # Inserimento in cima subito sotto la riga marcatore
+        # Nuova riga formattata per la tabella
+        NEW_ROW="| **$TAG_NAME** | $RELEASE_DATE | \`$CLIENT_ID\` | [⚡ Scarica $EXE_FILE]($DOWNLOAD_URL) |"
+        
+        # Inserimento subito sotto la riga del marcatore
         sed -i "/<!-- DOWNLOAD_TABLE_MARKER -->/a $NEW_ROW" README.md
         
+        # Push automatico delle modifiche al README
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add README.md
-        git diff --quiet && git diff --staged --quiet || (git commit -m "docs: aggiornato README per la build $TAG_NAME [skip ci]" && git push)
-
+        git diff --quiet && git diff --staged --quiet || (git commit -m "docs: aggiornato README per $CLIENT_ID ($TAG_NAME) [skip ci]" && git push)
     - name: Salva l'installer come Artifact scaricabile
       uses: actions/upload-artifact@v4
       with:
