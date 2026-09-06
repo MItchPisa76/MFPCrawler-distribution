@@ -31,7 +31,6 @@ jobs:
         LIMIT="${{ inputs.limit || '20' }}"
         echo "⏳ Recupero ultime $LIMIT release dal repository privato..."
         
-        # Ottiene la lista di release in formato JSON
         RELEASES=$(gh release list \
           --repo "MitchPisa76/MFPCrawler" \
           --limit "$LIMIT" \
@@ -43,7 +42,6 @@ jobs:
           exit 1
         fi
         
-        # Salva le release in una variabile multiriga
         echo "releases<<EOF" >> $GITHUB_OUTPUT
         echo "$RELEASES" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
@@ -51,84 +49,30 @@ jobs:
         echo "✅ Release recuperate:"
         echo "$RELEASES"
 
+    - name: 📝 Genera lista versioni per workflow dispatch
+      id: versions-list
+      run: |
+        RELEASES="${{ steps.fetch-releases.outputs.releases }}"
+        
+        # Estrae solo i tag e crea una lista YAML
+        OPTIONS="        options:"
+        while IFS='|' read -r tag publishedAt; do
+          OPTIONS="${OPTIONS}"$'\n'"          - ${tag}"
+        done <<< "$RELEASES"
+        
+        # Salva in output multiriga
+        echo "options<<EOF" >> $GITHUB_OUTPUT
+        echo "$OPTIONS" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+        echo "✅ Opzioni YAML generate:"
+        echo "$OPTIONS"
+
     - name: 🎨 Genera tabella Markdown
       id: generate-table
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        # Inizia la tabella
         TABLE_CONTENT="| Versione | Stato | Azione |"
         TABLE_CONTENT="${TABLE_CONTENT}"$'\n'"| :--- | :--- | :--- |"
         
-        # Legge le release e genera le righe
         while IFS='|' read -r tag publishedAt; do
-          # URL-encode il tag (sostituisci i punti con %2E per lo shield badge)
-          ENCODED_TAG="${tag//./%2E}"
-          
-          # Trigga il workflow dispatch via GitHub CLI con il tag come parametro
-          # Questo creerà un link che apre il workflow con target_version pre-configurato
-          WORKFLOW_URL="https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml"
-          
-          # Crea il link con il parametro target_version (sebbene non auto-compilato, è documentato nell'URL)
-          BADGE="[![Genera ${tag}](https://img.shields.io/badge/Genera%20${ENCODED_TAG}-blue?style=flat-square&logo=githubactions)](${WORKFLOW_URL}?target_version=${tag})"
-          ROW="| ${tag} | ✅ Disponibile | ${BADGE} |"
-          TABLE_CONTENT="${TABLE_CONTENT}"$'\n'"${ROW}"
-        done <<< "${{ steps.fetch-releases.outputs.releases }}"
-        
-        # Salva il contenuto della tabella
-        echo "table<<EOF" >> $GITHUB_OUTPUT
-        echo "$TABLE_CONTENT" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
-        
-        echo "📋 Tabella generata:"
-        echo "$TABLE_CONTENT"
-
-    - name: ✏️ Aggiorna il README.md
-      run: |
-        # Legge il file README
-        if [ ! -f README.md ]; then
-          echo "❌ README.md non trovato!"
-          exit 1
-        fi
-        
-        # Estrae il contenuto della tabella generata
-        TABLE_CONTENT="${{ steps.generate-table.outputs.table }}"
-        
-        # Salva la tabella in un file temporaneo
-        echo "$TABLE_CONTENT" > /tmp/table_content.txt
-        
-        # Usa perl per sostituire la sezione della tabella tra i marker
-        perl -i -0pe '
-          open(my $fh, "<", "/tmp/table_content.txt") or die "Cannot open file: $!";
-          my $table = do { local $/; <$fh> };
-          close($fh);
-          $table =~ s/\$/\\\$/g;  # Escape dollar signs
-          $table =~ s/\\/\\\\/g;  # Escape backslashes
-          s/(### Versioni Disponibili\s*\n)(.*?)(\n---)/\1$table\3/s;
-        ' README.md
-        
-        echo "✅ README.md aggiornato con le nuove release"
-    - name: 📤 Commit e Push
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        
-        if git diff --quiet README.md; then
-          echo "ℹ️ Nessun cambiamento nel README.md"
-        else
-          echo "📝 Commit delle modifiche..."
-          git add README.md
-          git commit -m "docs: aggiornate versioni disponibili da repository privato [skip ci]"
-          git push origin main
-          echo "✅ Push completato"
-        fi
-
-    - name: 📊 Riepilogo Esecuzione
-      run: |
-        echo "✅ Workflow completato con successo!"
-        echo ""
-        echo "📋 Azioni eseguite:"
-        echo "  • Recuperate release dal repository privato"
-        echo "  • Generata tabella Markdown"
-        echo "  • Aggiornato README.md"
-        echo "  • Push delle modifiche"
+          ENCODED_TAG="${](#)*
