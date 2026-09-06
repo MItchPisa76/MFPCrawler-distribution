@@ -74,7 +74,7 @@
                     <destination>target/dist</destination>
                     <type>EXE</type>
                     <icon>src/main/resources/icon.ico</icon>
-                    <runtimeImage>/image</runtimeImage>
+                    <runtimeImage>image</runtimeImage>
                     <javaOptions>
                         <option>-Dfile.encoding=UTF-8</option>
                     </javaOptions>
