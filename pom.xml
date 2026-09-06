@@ -72,7 +72,7 @@
                     <mainJar>your-module-jar-if-needed.jar</mainJar>
                     <input>target</input>
                     <destination>target/dist</destination>
-                    <type>win-exe</type>
+                    <type>EXE</type>
                     <icon>src/main/resources/icon.ico</icon>
                     <runtimeImage>${project.build.directory}/image</runtimeImage>
                     <javaOptions>
