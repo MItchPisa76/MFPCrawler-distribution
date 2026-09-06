@@ -93,9 +93,12 @@ jobs:
         TAG_NAME="${{ inputs.target_version }}"
         CLIENT_ID="${{ inputs.param_a }}"
         RELEASE_DATE=$(date +'%Y-%m-%d %H:%M')
-        EXE_FILE=$(basename $(ls target/dist/*.exe | grep -v 'temp' | head -n 1))
-        
-        DOWNLOAD_URL="https://github.com/MitchPisa76/MFPCrawler/releases/download/$TAG_NAME/$EXE_FILE"
+        EXE_FILE=$(basename $(ls target/dist/*.exe 2>/dev/null | grep -v 'temp' | head -n 1)) || { echo "Nessun .exe trovato"; exit 1; }
+
+
+        DOWNLOAD_URL="https://github.com/MItchPisa76/MFPCrawler-distribution/releases/download/$TAG_NAME/$EXE_FILE"
+
+        # DOWNLOAD_URL="https://github.com/MitchPisa76/MFPCrawler/releases/download/$TAG_NAME/$EXE_FILE"
         NEW_ROW="| **$TAG_NAME** | $RELEASE_DATE | \`$CLIENT_ID\` | [⚡ Scarica $EXE_FILE]($DOWNLOAD_URL) |"
         
         sed -i "/<!-- DOWNLOAD_TABLE_MARKER -->/a $NEW_ROW" README.md
