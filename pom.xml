@@ -33,32 +33,23 @@
             
             <!-- jlink to create runtime image (output: target/image) -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jlink-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>jlink-image</id>
-                        <goals><goal>jlink</goal></goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <outputDirectory>image</outputDirectory>
-                            <compress>2</compress>
-                            <stripDebug>true</stripDebug>
-                            <noHeaderFiles>true</noHeaderFiles>
-                            <noManPages>true</noManPages>
-                            <launchers>
-                                <launcher>
-                                    <name>mfpcrawler</name>
-                                    <module>your.module.name</module>
-                                    <mainClass>mtc.MFPCrawler.MFPCrawler</mainClass>
-                                </launcher>
-                            </launchers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-jlink-plugin</artifactId>
+    <version>3.2.0</version>
+    <executions>
+        <execution>
+            <id>jlink-image</id>
+            <goals><goal>jlink</goal></goals>
+            <phase>package</phase>
+            <configuration>
+                <skip>true</skip>  <!-- ADD THIS LINE -->
+                <outputDirectory>image</outputDirectory>
+                <!-- rest of config -->
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+ 
             <!-- jpackage uses the generated image -->
             <plugin>
                 <groupId>org.panteleyev</groupId>
@@ -74,7 +65,7 @@
                     <destination>target/dist</destination>
                     <type>EXE</type>
                     <icon>src/main/resources/icon.ico</icon>
-                    <runtimeImage>image</runtimeImage>
+                   
                     <javaOptions>
                         <option>-Dfile.encoding=UTF-8</option>
                     </javaOptions>
