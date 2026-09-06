@@ -53,6 +53,8 @@ jobs:
 
     - name: 🎨 Genera tabella Markdown
       id: generate-table
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         # Inizia la tabella
         TABLE_CONTENT="| Versione | Stato | Azione |"
@@ -62,7 +64,13 @@ jobs:
         while IFS='|' read -r tag publishedAt; do
           # URL-encode il tag (sostituisci i punti con %2E per lo shield badge)
           ENCODED_TAG="${tag//./%2E}"
-          BADGE="[![Genera ${tag}](https://img.shields.io/badge/Genera%20${ENCODED_TAG}-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=${tag})"
+          
+          # Trigga il workflow dispatch via GitHub CLI con il tag come parametro
+          # Questo creerà un link che apre il workflow con target_version pre-configurato
+          WORKFLOW_URL="https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml"
+          
+          # Crea il link con il parametro target_version (sebbene non auto-compilato, è documentato nell'URL)
+          BADGE="[![Genera ${tag}](https://img.shields.io/badge/Genera%20${ENCODED_TAG}-blue?style=flat-square&logo=githubactions)](${WORKFLOW_URL}?target_version=${tag})"
           ROW="| ${tag} | ✅ Disponibile | ${BADGE} |"
           TABLE_CONTENT="${TABLE_CONTENT}"$'\n'"${ROW}"
         done <<< "${{ steps.fetch-releases.outputs.releases }}"
