@@ -18,13 +18,9 @@ Seleziona la versione desiderata e clicca il bottone per generare un installer p
 
 | Versione | Stato | Azione |
 | :--- | :--- | :--- |
-| v1.5.2 | ✅ Disponibile | [![Genera v1.5.2](https://img.shields.io/badge/Genera%20v1.5.2-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=v1.5.2) |
-| v1.5.1 | ✅ Disponibile | [![Genera v1.5.1](https://img.shields.io/badge/Genera%20v1.5.1-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=v1.5.1) |
-| v1.5.0 | ✅ Disponibile | [![Genera v1.5.0](https://img.shields.io/badge/Genera%20v1.5.0-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=v1.5.0) |
-| v1.4.8 | ✅ Disponibile | [![Genera v1.4.8](https://img.shields.io/badge/Genera%20v1.4.8-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=v1.4.8) |
-| v1.4.7 | ✅ Disponibile | [![Genera v1.4.7](https://img.shields.io/badge/Genera%20v1.4.7-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=v1.4.7) |
-
-> 💡 **Nota:** Clicca sul badge della versione desiderata per aprire il workflow. Nel form che appare, inserisci il Parametro A e il Parametro B, quindi clicca **Run workflow**. L'installer personalizzato sarà disponibile negli Artifacts.
+| NEWT | ✅ Disponibile | [![Genera NEWT](https://img.shields.io/badge/Genera%20NEWT-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=NEWT) |
+| V-new | ✅ Disponibile | [![Genera V-new](https://img.shields.io/badge/Genera%20V-new-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=V-new) |
+| v1.0.0-manual | ✅ Disponibile | [![Genera v1.0.0-manual](https://img.shields.io/badge/Genera%20v1%2E0%2E0-manual-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=v1.0.0-manual) |
 
 ---
 
