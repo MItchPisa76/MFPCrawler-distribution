@@ -18,9 +18,9 @@ Seleziona la versione desiderata e clicca il bottone per generare un installer p
 
 | Versione | Stato | Azione |
 | :--- | :--- | :--- |
-| NEWT | ✅ Disponibile | [![Genera NEWT](https://img.shields.io/badge/Genera%20NEWT-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=NEWT) |
-| V-new | ✅ Disponibile | [![Genera V-new](https://img.shields.io/badge/Genera%20V-new-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=V-new) |
-| v1.0.0-manual | ✅ Disponibile | [![Genera v1.0.0-manual](https://img.shields.io/badge/Genera%20v1%2E0%2E0-manual-blue?style=flat-square&logo=githubactions)](../../actions/workflows/generate-custom-installer.yml?version=v1.0.0-manual) |
+| NEWT | ✅ Disponibile | [![Genera NEWT](https://img.shields.io/badge/Genera%20NEWT-blue?style=flat-square&logo=githubactions)](https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml?target_version=NEWT) |
+| V-new | ✅ Disponibile | [![Genera V-new](https://img.shields.io/badge/Genera%20V-new-blue?style=flat-square&logo=githubactions)](https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml?target_version=V-new) |
+| v1.0.0-manual | ✅ Disponibile | [![Genera v1.0.0-manual](https://img.shields.io/badge/Genera%20v1%2E0%2E0-manual-blue?style=flat-square&logo=githubactions)](https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml?target_version=v1.0.0-manual) |
 
 ---
 
