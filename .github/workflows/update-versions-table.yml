@@ -142,6 +142,8 @@ jobs:
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global credential.helper store
+        echo "https://x-access-token:${GH_TOKEN}@github.com" > ~/.git-credentials
         
         if git diff --quiet README.md .github/workflows/generate-custom-installer.yml 2>/dev/null; then
           echo "ℹ️ Nessun cambiamento nei file"
