@@ -75,4 +75,91 @@ jobs:
         TABLE_CONTENT="${TABLE_CONTENT}"$'\n'"| :--- | :--- | :--- |"
         
         while IFS='|' read -r tag publishedAt; do
-          ENCODED_TAG="${](#)*
+          ENCODED_TAG="${tag//./%2E}"
+          WORKFLOW_URL="https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml"
+          BADGE="[![Genera ${tag}](https://img.shields.io/badge/Genera%20${ENCODED_TAG}-blue?style=flat-square&logo=githubactions)](${WORKFLOW_URL})"
+          ROW="| ${tag} | ✅ Disponibile | ${BADGE} |"
+          TABLE_CONTENT="${TABLE_CONTENT}"$'\n'"${ROW}"
+        done <<< "${{ steps.fetch-releases.outputs.releases }}"
+        
+        echo "table<<EOF" >> $GITHUB_OUTPUT
+        echo "$TABLE_CONTENT" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+        echo "📋 Tabella generata:"
+        echo "$TABLE_CONTENT"
+
+    - name: ✏️ Aggiorna il README.md
+      run: |
+        if [ ! -f README.md ]; then
+          echo "❌ README.md non trovato!"
+          exit 1
+        fi
+        
+        TABLE_CONTENT="${{ steps.generate-table.outputs.table }}"
+        echo "$TABLE_CONTENT" > /tmp/table_content.txt
+        
+        perl -i -0pe '
+          open(my $fh, "<", "/tmp/table_content.txt") or die "Cannot open file: $!";
+          my $table = do { local $/; <$fh> };
+          close($fh);
+          $table =~ s/\$/\\\$/g;
+          $table =~ s/\\/\\\\/g;
+          s/(### Versioni Disponibili\s*\n)(.*?)(\n---)/\1$table\3/s;
+        ' README.md
+        
+        echo "✅ README.md aggiornato con le nuove release"
+
+    - name: 🔄 Aggiorna generate-custom-installer.yml con le versioni
+      run: |
+        WORKFLOW_FILE=".github/workflows/generate-custom-installer.yml"
+        OPTIONS="${{ steps.versions-list.outputs.options }}"
+        
+        if [ ! -f "$WORKFLOW_FILE" ]; then
+          echo "❌ File $WORKFLOW_FILE non trovato!"
+          exit 1
+        fi
+        
+        echo "📝 Aggiornamento della sezione options nel file $WORKFLOW_FILE..."
+        
+        # Salva le opzioni in un file temporaneo
+        echo "$OPTIONS" > /tmp/options.txt
+        
+        # Sostituisce la sezione options usando perl
+        perl -i -0pe '
+          open(my $fh, "<", "/tmp/options.txt") or die "Cannot open file: $!";
+          my $options = do { local $/; <$fh> };
+          close($fh);
+          $options =~ s/\$/\\\$/g;
+          $options =~ s/\\/\\\\/g;
+          s/(target_version:\s*\n\s*description:.*?\n\s*required: true\s*\n\s*type: choice\s*\n)(\s*options:(\s*\n\s*- [^\n]+)*)/$1$options/s;
+        ' "$WORKFLOW_FILE"
+        
+        echo "✅ File aggiornato con le nuove versioni"
+
+    - name: 📤 Commit e Push
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        
+        if git diff --quiet README.md .github/workflows/generate-custom-installer.yml 2>/dev/null; then
+          echo "ℹ️ Nessun cambiamento nei file"
+        else
+          echo "📝 Commit delle modifiche..."
+          git add README.md .github/workflows/generate-custom-installer.yml
+          git commit -m "docs: aggiornate versioni disponibili da repository privato [skip ci]"
+          git push origin main
+          echo "✅ Push completato"
+        fi
+
+    - name: 📊 Riepilogo Esecuzione
+      run: |
+        echo "✅ Workflow completato con successo!"
+        echo ""
+        echo "📋 Azioni eseguite:"
+        echo "  • Recuperate release dal repository privato"
+        echo "  • Generata lista versioni disponibili"
+        echo "  • Generata tabella Markdown"
+        echo "  • Aggiornato README.md"
+        echo "  • Sincronizzate versioni in generate-custom-installer.yml"
+        echo "  • Push delle modifiche"
