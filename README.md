@@ -48,6 +48,7 @@ La tabella sottostante viene aggiornata automaticamente dalla pipeline GitHub Ac
 | Versione | Data / Ora | Cliente / Ref (Param A) | Installer Windows (.exe) |
 | :--- | :--- | :--- | :--- |
 <!-- DOWNLOAD_TABLE_MARKER -->
+| **NEWT2** | 2026-09-07 14:45 | `CLIENT_00D` | [⚡ Scarica MFPCrawler-1.3.5.exe](https://github.com/MItchPisa76/MFPCrawler-distribution/releases/download/NEWT2/CLIENT_00D/MFPCrawler-1.3.5.exe) |
 | **NTY** | 2026-09-07 14:08 | `CLIENT_00D` | [⚡ Scarica MFPCrawler-1.3.4.exe](https://github.com/MItchPisa76/MFPCrawler-distribution/releases/download/NTY/CLIENT_00D/MFPCrawler-1.3.4.exe) |
 | **NTY** | 2026-09-07 13:32 | `CLIENT_00D` | [⚡ Scarica MFPCrawler-1.3.4.exe](https://github.com/MItchPisa76/MFPCrawler-distribution/releases/download/NTY/CLIENT_00D/MFPCrawler-1.3.4.exe) |
 | **NTY** | 2026-09-07 12:11 | `CLIENT_00D` | [⚡ Scarica MFPCrawler-1.3.4.exe](https://github.com/MItchPisa76/MFPCrawler-distribution/releases/download/NTY/CLIENT_00D/MFPCrawler-1.3.4.exe) |
