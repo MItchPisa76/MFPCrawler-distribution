@@ -8,11 +8,13 @@ on:
         required: true
         type: choice
         options:
+          - V3.4.5
           - NEWT2
           - NTY
           - NEWT
           - V-new
           - v1.0.0-manual
+
 
 
 

@@ -18,6 +18,7 @@ Seleziona la versione desiderata e clicca il bottone per generare un installer p
 
 | Versione | Stato | Azione |
 | :--- | :--- | :--- |
+| V3.4.5 | ✅ Disponibile | [![Genera V3.4.5](https://img.shields.io/badge/Genera%20V3%2E4%2E5-blue?style=flat-square&logo=githubactions)](https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml) |
 | NEWT2 | ✅ Disponibile | [![Genera NEWT2](https://img.shields.io/badge/Genera%20NEWT2-blue?style=flat-square&logo=githubactions)](https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml) |
 | NTY | ✅ Disponibile | [![Genera NTY](https://img.shields.io/badge/Genera%20NTY-blue?style=flat-square&logo=githubactions)](https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml) |
 | NEWT | ✅ Disponibile | [![Genera NEWT](https://img.shields.io/badge/Genera%20NEWT-blue?style=flat-square&logo=githubactions)](https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml) |
