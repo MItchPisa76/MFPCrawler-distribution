@@ -1,11 +1,12 @@
-name: Genera Installer Personalizzato
+name: Genera Installer Personalizzato (da remoto nodeJS)
 
 on:
   workflow_dispatch:
     inputs:
       target_version:
         description: 'Tag Versione dal Repo Privato (es. v1.0.0)'
-        required: true        
+        required: true    
+        default: 'main-1-1-1'
       param_a:
         description: 'Dato A per Token (es. ID Cliente)'
         required: true
