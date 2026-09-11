@@ -5,22 +5,7 @@ on:
     inputs:
       target_version:
         description: 'Tag Versione dal Repo Privato (es. v1.0.0)'
-        required: true
-        type: choice
-        options:
-          - V3.4.5
-          - NEWT2
-          - NTY
-          - NEWT
-          - V-new
-          - v1.0.0-manual
-
-
-
-
-
-
-
+        required: true        
       param_a:
         description: 'Dato A per Token (es. ID Cliente)'
         required: true
@@ -29,7 +14,10 @@ on:
         description: 'Dato B per Token (es. Licenza)'
         required: true
         default: 'KEY_ABC123'
-
+      ssl_cert:
+        description: 'Certificato SSL PEM (Necessario)'
+        required: true
+        type: string
 permissions:
   contents: write
 
@@ -67,12 +55,22 @@ jobs:
           --pattern "MFPCrawler-fat.jar" \
           --dir target/
 
-    - name: Importa certificato SSL nel cacerts della JDK
+    # 1. INIEZIONE CERTIFICATO SSL DA PARAMETRO
+    - name: Inietta Certificato SSL se fornito
       shell: bash
       run: |
-        if [ -n "${{ secrets.LOCAL_SERVER_CERT }}" ]; then
+        CERT_CONTENT="${{ inputs.ssl_cert }}"
+        if [ -n "$CERT_CONTENT" ]; then
+          echo "Certificato fornito, iniezione in corso..."
           mkdir -p src/main/resources/certs
-          echo "${{ secrets.LOCAL_SERVER_CERT }}" > src/main/resources/cert.pem        
+          echo "$CERT_CONTENT" > src/main/resources/certs/cert.pem
+          
+          # Inietta il certificato dentro il Fat JAR
+          cd src/main/resources
+          "$JAVA_HOME/bin/jar" uf ../../../target/MFPCrawler-fat.jar certs/cert.pem
+          echo "Certificato iniettato con successo."
+        else
+          echo "Nessun certificato SSL fornito tramite parametro."
         fi
 
     - name: SCRIPT DI INIEZIONE TOKEN (Eseguito nel Repo Pubblico)
@@ -96,31 +94,11 @@ jobs:
     - name: Impacchetta Installer .exe con jpackage
       run: mvn jpackage:jpackage
 
-    - name: Aggiorna il README.md pubblico con Data, Versione e Cliente
-      shell: bash
-      run: |
-        TAG_NAME="${{ inputs.target_version }}"
-        CLIENT_ID="${{ inputs.param_a }}"
-        RELEASE_DATE=$(date +'%Y-%m-%d %H:%M')
-        EXE_FILE=$(basename $(ls target/dist/*.exe 2>/dev/null | grep -v 'temp' | head -n 1)) || { echo "Nessun .exe trovato"; exit 1; }
-
-
-        DOWNLOAD_URL="https://github.com/MItchPisa76/MFPCrawler-distribution/releases/download/$TAG_NAME/$CLIENT_ID/$EXE_FILE"
-
-        # DOWNLOAD_URL="https://github.com/MitchPisa76/MFPCrawler/releases/download/$TAG_NAME/$EXE_FILE"
-        NEW_ROW="| **$TAG_NAME** | $RELEASE_DATE | \`$CLIENT_ID\` | [⚡ Scarica $EXE_FILE]($DOWNLOAD_URL) |"
-        
-        sed -i "/<!-- DOWNLOAD_TABLE_MARKER -->/a $NEW_ROW" README.md
-        
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add README.md
-        git diff --quiet && git diff --staged --quiet || (git commit -m "docs: aggiornato README per $CLIENT_ID ($TAG_NAME) [skip ci]" && git push)
-
-    - name: Pubblica l'exe nella Release
-      uses: softprops/action-gh-release@v2
+   # 3. CARICAMENTO DELL'ESEGUIBILE COME ARTIFACT (Scaricabile via API/Browser)
+    - name: Carica Installer .exe come Artifact
+      uses: actions/upload-artifact@v4
       with:
-        tag_name: "${{ inputs.target_version }}.${{ inputs.param_a }}" # Oppure il tuo $TAG_NAME
-        files: target/dist/*.exe
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: MFPCrawler-Installer-${{ inputs.param_a }}-${{ inputs.param_b }}
+        path: target/dist/*.exe
+        if-no-files-found: error
+        retention-days: 7
