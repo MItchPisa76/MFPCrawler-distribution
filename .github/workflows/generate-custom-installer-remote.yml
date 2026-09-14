@@ -32,28 +32,27 @@ jobs:
 
     steps:    
     - name: Mostra i parametri nei log e nel sommario
-      shell: bash 
       run: |
-        # Converte il percorso Windows di GitHub in un percorso valido per Bash
-        BASH_SUMMARY=$(cygpath -u "$GITHUB_STEP_SUMMARY")
+        # Inizializza o ripulisce il file del sommario scrivendo il titolo iniziale
+        "### 🚀 Parametri di input utilizzati" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8
 
-        # Scrive la tabella usando il percorso convertito
-        cat << 'EOF' >> "$BASH_SUMMARY"
-        ### 🚀 Parametri di input utilizzati
+        # Aggiunge l'intestazione della tabella Markdown
+        "" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+        "| Parametro | Valore Inserito |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+        "| :--- | :--- |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
 
-        | Parametro | Valore Inserito |
-        | :--- | :--- |
-        | **Target Version** | `${{ inputs.target_version }}` |
-        | **Param A (Customer)** | `${{ inputs.param_a }}` |
-        | **Param B (Token ID)** | `${{ inputs.param_b }}` |
-        | **Token Extra** | `${{ inputs.token_extra }}` |
-        | **Eseguito da** | @${{ github.actor }} |
-        EOF
+        # Aggiunge le singole righe con i valori dinamici degli input
+        "| **Target Version** | `${{ inputs.target_version }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+        "| **Param A (Customer)** | `${{ inputs.param_a }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+        "| **Param B (Token ID)** | `${{ inputs.param_b }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+        "| **Token Extra** | `${{ inputs.token_extra }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+        "| **Eseguito da** | @${{ github.actor }} |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+        "" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
 
-        # Log tradizionali in console
-        echo "Log di debug in console - target_version: ${{ inputs.target_version }}"
-        echo "Log di debug in console - token_extra: ${{ inputs.token_extra }}"
-        echo "Log di debug in console - param_b: ${{ inputs.param_b }}"
+        # Log di debug tradizionali visibili solo nella console del job
+        Write-Output "Log di debug in console - target_version: ${{ inputs.target_version }}"
+        Write-Output "Log di debug in console - token_extra: ${{ inputs.token_extra }}"
+        Write-Output "Log di debug in console - param_b: ${{ inputs.param_b }}"
     - name: Controlla repository pubblico
       uses: actions/checkout@v4
       with:
