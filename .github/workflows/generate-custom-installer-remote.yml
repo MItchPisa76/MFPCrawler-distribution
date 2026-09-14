@@ -34,11 +34,17 @@ jobs:
     - name: Mostra i parametri nei log e nel sommario
       shell: bash 
       run: |
-        echo "### 🚀 Parametri di input utilizzati:" >> $GITHUB_STEP_SUMMARY
-        echo "- **target_version:** ${{ inputs.target_version }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **param_a:** ${{ inputs.param_a }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **param_b:** ${{ inputs.param_b }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **token_extra:** ${{ inputs.token_extra }}" >> $GITHUB_STEP_SUMMARY
+        cat << 'EOF' >> $GITHUB_STEP_SUMMARY
+        ### 🚀 Parametri di input utilizzati
+
+        | Parametro | Valore Inserito |
+        | :--- | :--- |
+        | **Target Version** | `${{ inputs.target_version }}` |
+        | **Param A (Customer)** | `${{ inputs.param_a }}` |
+        | **Param B (Token ID)** | `${{ inputs.param_b }}` |
+        | **Token Extra** | `${{ inputs.token_extra }}` |
+        | **Eseguito da** | @${{ github.actor }} |
+        EOF
         echo "Log di debug in console - target_version: ${{ inputs.target_version }}"
         echo "Log di debug in console - token_extra: ${{ inputs.token_extra }}"
         echo "Log di debug in console - param_b: ${{ inputs.param_b }}"
