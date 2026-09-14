@@ -1,0 +1,20 @@
+name: Cancella Vecchie Run
+
+on:
+  # Permette l'avvio manuale dalla scheda "Actions"
+  workflow_dispatch:
+  # Avvia il workflow automaticamente ogni domenica a mezzanotte
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  del_runs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rimuovi le run dei workflow
+        uses: AykutSarac/clean-workflow-runs@v1.3.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          save_period: 1h # Mantiene le run degli ultimi 30 giorni (0 per cancellare tutto)
+          # Facoltativo: puoi filtrare per uno stato specifico (es. 'completed', 'failure', 'cancelled')
+          run_states: 'completed'
