@@ -32,6 +32,7 @@ jobs:
 
     steps:    
     - name: Mostra i parametri nei log e nel sommario
+      shell: bash 
       run: |
         echo "### 🚀 Parametri di input utilizzati:" >> $GITHUB_STEP_SUMMARY
         echo "- **target_version:** ${{ inputs.target_version }}" >> $GITHUB_STEP_SUMMARY
