@@ -30,7 +30,17 @@ jobs:
   inject-and-build:    
     runs-on: windows-latest
 
-    steps:
+    steps:    
+    - name: Mostra i parametri nei log e nel sommario
+      run: |
+        echo "### 🚀 Parametri di input utilizzati:" >> $GITHUB_STEP_SUMMARY
+        echo "- **target_version:** ${{ inputs.target_version }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **param_a:** ${{ inputs.param_a }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **param_b:** ${{ inputs.param_b }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **token_extra:** ${{ inputs.token_extra }}" >> $GITHUB_STEP_SUMMARY
+        echo "Log di debug in console - target_version: ${{ inputs.target_version }}"
+        echo "Log di debug in console - token_extra: ${{ inputs.token_extra }}"
+        echo "Log di debug in console - param_b: ${{ inputs.param_b }}"
     - name: Controlla repository pubblico
       uses: actions/checkout@v4
       with:
