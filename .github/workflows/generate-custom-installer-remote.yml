@@ -85,11 +85,12 @@ jobs:
         PARAM_B="${{ inputs.param_b }}"
         
         # 1. Genera la stringa Base64 combinata
-        RAW_STRING="${PARAM_A}:${PARAM_B}"
+        RAW_STRING="${PARAM_A}:${PARAM_B}:${{ inputs.token_extra }}"
         GENERATED_TOKEN=$(echo -n "$RAW_STRING" | base64)
         
         # 2. Crea il file di configurazione
-        echo "app.token=$GENERATED_TOKEN" > token.properties
+        echo "customer.name=${{ inputs.param_a }}\n" > token.properties
+        echo "app.token=$GENERATED_TOKEN" >> token.properties 
         
         # 3. Inietta token.properties direttamente dentro il Fat JAR scaricato
         "$JAVA_HOME/bin/jar" uf target/MFPCrawler-fat.jar token.properties
