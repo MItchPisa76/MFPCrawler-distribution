@@ -8,13 +8,17 @@ on:
         required: true    
         default: 'main-1-1-1'
       param_a:
-        description: 'Dato A per Token (es. ID Cliente)'
+        description: 'Customer Name (es.Cliente)'
         required: true
         default: 'CLIENT_001'
       param_b:
-        description: 'Dato B per Token (es. Licenza)'
+        description: 'Customer TokenI (es. IDUNivoco)'
         required: true
         default: 'KEY_ABC123'
+      token_extra:
+        description: 'Version Token (es. rev.special)'
+        required: false
+        default: 'mtc'
       ssl_cert:
         description: 'Certificato SSL PEM (Necessario)'
         required: true
