@@ -34,7 +34,11 @@ jobs:
     - name: Mostra i parametri nei log e nel sommario
       shell: bash 
       run: |
-        cat << 'EOF' >> $GITHUB_STEP_SUMMARY
+        # Converte il percorso Windows di GitHub in un percorso valido per Bash
+        BASH_SUMMARY=$(cygpath -u "$GITHUB_STEP_SUMMARY")
+
+        # Scrive la tabella usando il percorso convertito
+        cat << 'EOF' >> "$BASH_SUMMARY"
         ### 🚀 Parametri di input utilizzati
 
         | Parametro | Valore Inserito |
@@ -45,6 +49,8 @@ jobs:
         | **Token Extra** | `${{ inputs.token_extra }}` |
         | **Eseguito da** | @${{ github.actor }} |
         EOF
+
+        # Log tradizionali in console
         echo "Log di debug in console - target_version: ${{ inputs.target_version }}"
         echo "Log di debug in console - token_extra: ${{ inputs.token_extra }}"
         echo "Log di debug in console - param_b: ${{ inputs.param_b }}"
