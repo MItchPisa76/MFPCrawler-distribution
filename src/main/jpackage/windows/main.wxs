@@ -19,6 +19,23 @@
     <?else?>
     <?define JpUpgradeVersionOnlyDetectDowngrade="yes"?>
     <?endif?>
+
+<Product Id="$(var.JpProductCode)" Name="$(var.JpAppName)" Language="$(var.JpProductLanguage)" Version="$(var.JpAppVersion)" Manufacturer="$(var.JpAppVendor)" UpgradeCode="$(var.JpProductUpgradeCode)">
+
+    <!-- Rileva qualsiasi versione di MFPCrawler già installata -->
+    <Upgrade Id="$(var.JpProductUpgradeCode)">
+        <UpgradeVersion OnlyDetect="yes" Property="MFPCRAWLER_EXISTING_FOUND" Minimum="0.0.0.0" IncludeMinimum="yes" />
+    </Upgrade>
+
+    <!-- Proprietà per tracciare la scelta dell'utente: UPDATE, OVERWRITE, UNINSTALL -->
+    <Property Id="EXISTING_ACTION" Value="UPDATE" />
+
+    <!-- Custom Action per la disinstallazione immediata nel caso l'utente scelga "Disinstalla" -->
+    <CustomAction Id="CA_UninstallPrevious" Directory="TARGETDIR" ExeCommand="msiexec /x [MFPCRAWLER_EXISTING_FOUND] /qb" Return="asyncWait" />
+
+</Product>
+
+
     <Product Id="$(var.JpProductCode)" Name="$(var.JpAppName)" Language="$(var.JpProductLanguage)" Version="$(var.JpAppVersion)" Manufacturer="$(var.JpAppVendor)" UpgradeCode="$(var.JpProductUpgradeCode)">
         <Package Description="$(var.JpAppDescription)" Manufacturer="$(var.JpAppVendor)" InstallerVersion="$(var.JpInstallerVersion)" Compressed="$(var.JpCompressedMsi)" InstallScope="$(var.JpInstallScope)" Platform="x64" />
         <Media Id="1" Cabinet="Data.cab" EmbedCab="yes" />
@@ -45,6 +62,13 @@
         <CustomAction Id="JpSetARPCOMMENTS" Property="ARPCOMMENTS" Value="$(var.JpAppDescription)" />
         <CustomAction Id="JpSetARPCONTACT" Property="ARPCONTACT" Value="$(var.JpAppVendor)" />
         <CustomAction Id="JpSetARPSIZE" Property="ARPSIZE" Value="$(var.JpAppSizeKb)" />
+         
+        <!-- Proprietà per tracciare la scelta dell'utente: UPDATE, OVERWRITE, UNINSTALL -->
+        <Property Id="EXISTING_ACTION" Value="UPDATE" />
+
+            <!-- Custom Action per la disinstallazione immediata nel caso l'utente scelga "Disinstalla" -->
+        <CustomAction Id="CA_UninstallPrevious" Directory="TARGETDIR" ExeCommand="msiexec /x [MFPCRAWLER_EXISTING_FOUND] /qb" Return="asyncWait" />
+
         <?ifdef JpHelpURL ?>
         <?endif?>
         <?ifdef JpAboutURL ?>
