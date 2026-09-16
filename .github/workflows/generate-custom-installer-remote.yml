@@ -6,7 +6,7 @@ on:
       target_version:
         description: 'Tag Versione dal Repo Privato (es. v1.0.0)'
         required: true    
-        default: 'main-1-1-1'
+        default: 'Newt2.0'
       param_a:
         description: 'Customer Name (es.Cliente)'
         required: true
