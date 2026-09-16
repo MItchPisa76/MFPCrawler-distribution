@@ -56,7 +56,7 @@
         <javaOptions>
             <option>-Dfile.encoding=UTF-8</option>
         </javaOptions>
-<temp>int<temp/>
+<temp>int</temp>
         <winMenu>true</winMenu>
         <winMenuGroup>MFPCrawler</winMenuGroup>
         <winShortcut>true</winShortcut>
