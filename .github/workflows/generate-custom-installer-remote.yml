@@ -123,6 +123,13 @@ jobs:
       run: mvn jpackage:jpackage
 
    # 3. CARICAMENTO DELL'ESEGUIBILE COME ARTIFACT (Scaricabile via API/Browser)
+AGGIUNGI QUESTO PASSO SUBITO DOPO
+    - name: Recupera i file temporanei della build
+      uses: actions/upload-artifact@v4
+      with:
+        name: jpackage-temp-files
+        path: int/  # Modifica in target/int/ se il plugin lo ha generato dentro target
+        if-no-files-found: warn # Ti 
     - name: Carica Installer .exe come Artifact
       uses: actions/upload-artifact@v4
       with:
