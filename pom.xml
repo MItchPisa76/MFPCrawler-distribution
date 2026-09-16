@@ -57,7 +57,7 @@
             <option>-Dfile.encoding=UTF-8</option>
         </javaOptions>
         <temp>int</temp>
-        <resourceDir>src/jpackage/windows</resourceDir>
+        <resourceDir>src/main/jpackage/windows</resourceDir>
         <winMenu>true</winMenu>
         <winMenuGroup>MFPCrawler</winMenuGroup>
         <winShortcut>true</winShortcut>
