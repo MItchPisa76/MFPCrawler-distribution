@@ -61,7 +61,7 @@
                  Id="InstallStartMenuShortcut"
                  Y="$(var.JpStartMenuShortcutPromptControlY)"
                  Property="JP_INSTALL_STARTMENU_SHORTCUT"
-                 Text="!(loc.ShortcutPromptDlgStartMenuShortcutControlLabel)CIAO"/>
+                 Text="!(loc.ShortcutPromptDlgStartMenuShortcutControlLabel)"/>
         <?endif?>
 
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes"

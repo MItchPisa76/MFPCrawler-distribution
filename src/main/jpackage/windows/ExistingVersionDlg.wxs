@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <UI>
+      <Dialog Id="ExistingVersionDlg" Width="370" Height="270" Title="!(loc.ShortcutPromptDlg_Title)">
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="!(loc.ShortcutPromptDlgBannerBitmap)" />
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="300" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Rilevata versione precedente" />
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes" Text="Seleziona l'azione da eseguire per la versione esistente." />
+
+        <Control Id="ActionRadioGroup" Type="RadioButtonGroup" X="30" Y="60" Width="300" Height="120" Property="EXISTING_ACTION">
+          <RadioButtonGroup Property="EXISTING_ACTION">
+            <RadioButton Value="UPDATE" Text="Aggiorna la versione esistente (mantiene le configurazioni)" X="0" Y="0" Width="290" Height="25" />
+            <RadioButton Value="OVERWRITE" Text="Sovrascrivi completamente (sostituisce tutti i file)" X="0" Y="30" Width="290" Height="25" />
+            <RadioButton Value="UNINSTALL" Text="Disinstalla la versione precedente ed esci" X="0" Y="60" Width="290" Height="25" />
+          </RadioButtonGroup>
+        </Control>
+
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
+          <!-- Se l'utente sceglie di Disinstallare ed uscire -->
+          <Publish Event="DoAction" Value="CA_UninstallPrevious">EXISTING_ACTION = "UNINSTALL"</Publish>
+          <Publish Event="EndDialog" Value="Exit">EXISTING_ACTION = "UNINSTALL"</Publish>
+
+          <!-- Se sceglie Aggiorna o Sovrascrivi, prosegue nell'installazione -->
+          <Publish Event="NewDialog" Value="InstallDirDlg">EXISTING_ACTION = "UPDATE" OR EXISTING_ACTION = "OVERWRITE"</Publish>
+        </Control>
+
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)">
+          <Publish Event="NewDialog" Value="WelcomeDlg">1</Publish>
+        </Control>
+
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+      </Dialog>
+    </UI>
+  </Fragment>
+</Wix>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <UI>
+      <Dialog Id="WelcomeCustomDlg" Width="370" Height="270" Title="!(loc.ShortcutPromptDlg_Title)">
+        <!-- Banner e sfondo standard -->
+        <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="WixUI_Bmp_Dialog" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        
+        <!-- Titoli della pagina Welcome -->
+        <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Benvenuti nell'installazione di MFPCrawler" />
+
+        <!-- CAMPI PARAMETRI -->
+        <Control Id="HostLabel" Type="Text" X="135" Y="90" Width="80" Height="15" Transparent="yes" Text="Indirizzo Host/IP:" />
+        <Control Id="HostEdit" Type="Edit" X="220" Y="88" Width="120" Height="15" Property="PARAMETRO_HOST" Text="{80}" />
+
+        <Control Id="PortaLabel" Type="Text" X="135" Y="115" Width="80" Height="15" Transparent="yes" Text="Porta SNMP:" />
+        <Control Id="PortaEdit" Type="Edit" X="220" Y="113" Width="50" Height="15" Property="PARAMETRO_PORTA" Text="{10}" />
+
+        <!-- Pulsanti di Navigazione -->
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
+          <Publish Event="NewDialog" Value="InstallDirDlg">1</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+      </Dialog>
+    </UI>
+  </Fragment>
+</Wix>
