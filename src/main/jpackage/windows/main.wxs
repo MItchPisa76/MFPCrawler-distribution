@@ -13,6 +13,8 @@
     <?ifdef JpAllowUpgrades ?>
     <?define JpUpgradeVersionOnlyDetectUpgrade="no"?>
     <?else?>
+    <?define JpUpgradeVersionOnlyDetectDowngrade="no"?>
+    <?else?>
     <?define JpUpgradeVersionOnlyDetectUpgrade="yes"?>
     <?endif?>
     
@@ -43,8 +45,10 @@
         <Binary Id="JpCaDll" SourceFile="wixhelper.dll" />
         <CustomAction Id="JpFindRelatedProducts" BinaryKey="JpCaDll" DllEntry="FindRelatedProductsEx" />
         
-        <!-- Standard required root -->
-        <Directory Id="TARGETDIR" Name="SourceDir" />
+        <!-- Definizione della struttura Directory con SystemFolder -->
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="SystemFolder" Name="System32" />
+        </Directory>
         
         <Feature Id="DefaultFeature" Title="!(loc.MainFeatureTitle)" Level="1">
             <ComponentGroupRef Id="Shortcuts" />
@@ -64,7 +68,7 @@
         <Property Id="PARAMETRO_SERVER" Value="myhist" />
         <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
         
-        <!-- Custom Action corretta per la disinstallazione tramite SystemFolder exe -->
+        <!-- Custom Action per avviare la disinstallazione esterna senza far crashare il setup -->
         <CustomAction Id="CA_UninstallPrevious" Directory="SystemFolder" ExeCommand="msiexec.exe /x [MFPCRAWLER_EXISTING_FOUND] /qb" Return="asyncNoWait" />
 
         <UIRef Id="WixUI_InstallDir" />
@@ -93,7 +97,7 @@
         <UI>
             <TextStyle Id="WixUI_Font_Emphasized" FaceName="Tahoma" Size="8" Bold="yes" />
 
-            <!-- Override del punto di ingresso: avvia subito WelcomeCustomDlg al posto di WelcomeDlg -->
+            <!-- Override per evitare la pagina della licenza standard di WixUI e reindirizzare i flussi -->
             <Publish Dialog="BrowseDlg" Control="OK" Event="DoAction" Value="WixUIValidatePath" Order="1">1</Publish>
             <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
             <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
@@ -154,7 +158,7 @@
                 <RadioButton Value="UNINSTALL" Text="Disinstalla la versione precedente ed esci" X="0" Y="60" Width="290" Height="25" />
             </RadioButtonGroup>
 
-            <!-- Sovrascrive la sequenza di avvio standard rimpiazzando WelcomeDlg di WixUI -->
+            <!-- Sovrascrive la sequenza di avvio avviando WelcomeCustomDlg -->
             <InstallUISequence>
                 <Show Dialog="WelcomeCustomDlg" Before="ProgressDlg">NOT Installed</Show>
             </InstallUISequence>
