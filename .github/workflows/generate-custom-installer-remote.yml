@@ -163,10 +163,10 @@ jobs:
           echo "Token iniettato con successo."
           printf '<?xml version="1.0" encoding="utf-8"?>\n<Include>' > overrides.wxi
 
-          printf "<?define NomeRegistrato=\"${{ inputs.customer_name }}\">" \
-                 "<?define InfoRegistrazione=\"${{ inputs.customer_info }}\">"\
-                 "<?define ParametroServer=\"${{ inputs.server_url }}\">" \
-                 </Include>
+          printf "   <?define NomeRegistrato=\"${{ inputs.customer_name }}\">\n" >> overrides.wxi
+          printf "   <?define InfoRegistrazione=\"${{ inputs.customer_info }}\">\n">> overrides.wxi
+          printf "   <?define ParametroServer=\"${{ inputs.server_url }}\">\n" >> overrides.wxi
+          printf "</Include>" >> overrides.wxi
 
 
       - name: Impacchetta Installer con jpackage e Parametri
