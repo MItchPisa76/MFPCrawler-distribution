@@ -28,112 +28,163 @@ on:
         required: true
         type: string
       so_selected:
-        description: 'formato out'
+        description: 'Formato di Output dell\'Installer'
         required: true
-        type: string
+        type: choice
         default: 'WIN64EXE'
+        options:
+          - 'WIN64EXE'
+          - 'WIN64MSI'
+          - 'WIN32EXE'
+          - 'LINUXDEB'
+          - 'LINUXRPM'
+          - 'MACOSDMG'
+
 permissions:
   contents: write
 
 jobs:
-  inject-and-build:    
-    runs-on: windows-latest
+  inject-and-build:
+    strategy:
+      matrix:
+        include:
+          - formato: 'WIN64EXE'
+            os: windows-latest
+            architecture: x64
+            pom: pom-windows.xml
+          - formato: 'WIN64MSI'
+            os: windows-latest
+            architecture: x64
+            pom: pom-windows-msi.xml
+          - formato: 'WIN32EXE'
+            os: windows-latest
+            architecture: x86
+            pom: pom-windows32.xml
+          - formato: 'LINUXDEB'
+            os: ubuntu-latest
+            architecture: x64
+            pom: pom-linux.xml
+          - formato: 'LINUXRPM'
+            os: ubuntu-latest
+            architecture: x64
+            pom: pom-linux-rpm.xml
+          - formato: 'MACOSDMG'
+            os: macos-latest
+            architecture: x64
+            pom: pom-macos.xml
+            
+    runs-on: \${{ matrix.os }}
+    if: \${{ matrix.formato == inputs.so_selected }}
+
+    defaults:
+      run:
+        shell: bash  # Applica Bash come standard per tutti gli step di questo job
 
     steps:    
     - name: Mostra i parametri nei log e nel sommario
       run: |
-        "### 🚀 Parametri di input utilizzati" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8
-        "" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-        "| Parametro | Valore Inserito |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-        "| :--- | :--- |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-        "| **Target Version** | `${{ inputs.target_version }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-        "| **Param A (Customer)** | `${{ inputs.param_a }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-        "| **Param B (Token ID)** | `${{ inputs.param_b }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-        "| **Token Extra** | `${{ inputs.token_extra }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-        "| **Server URL** | `${{ inputs.server_url }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-        "| **Eseguito da** | @${{ github.actor }} |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-        "" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+        echo "### 🚀 Parametri di input utilizzati" >> \$GITHUB_STEP_SUMMARY
+        echo "" >> \$GITHUB_STEP_SUMMARY
+        echo "| Parametro | Valore Inserito |" >> \$GITHUB_STEP_SUMMARY
+        echo "| :--- | :--- |" >> \$GITHUB_STEP_SUMMARY
+        echo "| **Target Version** | \`${{ inputs.target_version }}\` |" >> \$GITHUB_STEP_SUMMARY
+        echo "| **Param A (Customer)** | \`${{ inputs.customer_name }}\` |" >> \$GITHUB_STEP_SUMMARY
+        echo "| **Param B (Token ID)** | \`${{ inputs.inputs.customer_info }}\` |" >> \$GITHUB_STEP_SUMMARY
+        echo "| **Token Extra** | \`${{ inputs.token_extra }}\` |" >> \$GITHUB_STEP_SUMMARY
+        echo "| **Server URL** | \`${{ inputs.server_url }}\` |" >> \$GITHUB_STEP_SUMMARY
+        echo "| **Formato OS Target** | \`${{ matrix.formato }}\` |" >> \$GITHUB_STEP_SUMMARY
+        echo "| **File POM Selezionato** | \`${{ matrix.pom }}\` |" >> \$GITHUB_STEP_SUMMARY
+        echo "| **Eseguito da** | @ github.actor |" >> GITHUB_STEP_SUMMARY
 
     - name: Controlla repository pubblico
       uses: actions/checkout@v4
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: \${{ secrets.GITHUB_TOKEN }}
 
-    - name: Configura Java (JDK 21 x64)
+    - name: Installa dipendenze per pacchetti RPM (Solo su Linux RPM)
+      if: \${{ matrix.formato == 'LINUXRPM' }}
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y rpm
+
+    - name: Configura Java (Dinamico per versione e architettura)
       uses: actions/setup-java@v5
       with:
         java-version: '21'
         distribution: 'temurin'
-        architecture: x64
+        architecture: \${{ matrix.architecture }}
 
     - name: Prepara cartella target
       run: mkdir -p target
 
     - name: Scarica Fat JAR dal Repository Privato
       env:
-        GH_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
-      shell: bash
+        GH_TOKEN: \${{ secrets.PRIVATE_REPO_PAT }}
       run: |
-        TAG="${{ inputs.target_version }}"
-        echo "Download del Fat JAR dalla release $TAG del repository privato..."
+        TAG="\${{ inputs.target_version }}"
+        echo "Download del Fat JAR dalla release \$TAG del repository privato..."
         
-        gh release download "$TAG" \
+        gh release download "\$TAG" \
           --repo "MitchPisa76/MFPCrawler" \
           --pattern "MFPCrawler-fat.jar" \
           --dir target/
-
               
     - name: Inietta Certificato SSL
-      shell: bash
       run: |
-        CERT_CONTENT="${{ inputs.ssl_cert }}"
-        if [ -n "$CERT_CONTENT" ]; then
+        CERT_CONTENT="\${{ inputs.ssl_cert }}"
+        if [ -n "\$CERT_CONTENT" ]; then
           echo "Certificato fornito, iniezione in corso..."
           mkdir -p src/main/resources/certs
-          echo "$CERT_CONTENT" > src/main/resources/certs/cert.pem
+          echo "\$CERT_CONTENT" > src/main/resources/certs/cert.pem
           
           cd src/main/resources
-          "$JAVA_HOME/bin/jar" uf ../../../target/MFPCrawler-fat.jar certs/cert.pem
+          "\$JAVA_HOME/bin/jar" uf ../../../target/MFPCrawler-fat.jar certs/cert.pem
           echo "Certificato iniettato con successo."
         else
           echo "Nessun certificato SSL fornito tramite parametro."
         fi
 
-    - name: SCRIPT DI INIEZIONE TOKEN (Eseguito nel Repo Pubblico)
-      shell: bash
+    - name: SCRIPT DI INIEZIONE TOKEN
       run: |
-        PARAM_A="${{ inputs.customer_name }}"
-        PARAM_B="${{ inputs.customer_info }}"
+        PARAM_A="\${{ inputs.customer_name }}"
+        PARAM_B="\${{ inputs.customer_info }}"
         
-        RAW_STRING="${PARAM_A}:${PARAM_B}:${{ inputs.token_extra }}"
-        GENERATED_TOKEN=$(echo -n "$RAW_STRING" | base64)
+        RAW_STRING="\${PARAM_A}:\({PARAM_B}:\){{ inputs.token_extra }}"
+        GENERATED_TOKEN=(echo -n "RAW_STRING" | base64)
         
-        echo "customer.name=${{ inputs.customer_name }}\n" > token.properties
-        echo "user.token=${{ inputs.customer_info }}\n" >> token.properties
-        echo "app.token=$GENERATED_TOKEN" >> token.properties 
+        # Corretto l'andata a capo nativa cross-platform usando printf
+        printf "customer.name=%s\n" "\${{ inputs.customer_name }}" > token.properties
+        printf "user.token=%s\n" "\${{ inputs.customer_info }}" >> token.properties
+        printf "app.token=%s\n" "\$GENERATED_TOKEN" >> token.properties 
         
-        "$JAVA_HOME/bin/jar" uf target/MFPCrawler-fat.jar token.properties
-        
-        echo "Token iniettato con successo in target/MFPCrawler-fat.jar"
+        "\$JAVA_HOME/bin/jar" uf target/MFPCrawler-fat.jar token.properties
+        echo "Token iniettato con successo."
 
-    - name: Impacchetta Installer .exe con jpackage e Parametri
+    - name: Impacchetta Installer con jpackage e Parametri
       run: |
-        mvn jpackage:jpackage -X `
-          "-Dinstaller.nomeRegistrato=${{ inputs.customer_name }}" `
-          "-Dinstaller.infoReg=${{ inputs.customer_info }}" `
-          "-Dinstaller.server=${{ inputs.server_url }}"
+        # Invocazione dinamica basata sul POM specifico stabilito dalla matrice
+        mvn -f "\${{ matrix.pom }}" jpackage:jpackage -X \
+          "-Dinstaller.nomeRegistrato=\${{ inputs.customer_name }}" \
+          "-Dinstaller.infoReg=\${{ inputs.customer_info }}" \
+          "-Dinstaller.server=\${{ inputs.server_url }}"
 
     - name: Recupera i file temporanei della build
       uses: actions/upload-artifact@v4
       with:
-        name: jpackage-temp-files
+        name: jpackage-temp-files-\${{ matrix.formato }}
         path: int/
         if-no-files-found: warn
 
-    - name: Carica Installer .exe come Artifact
+    - name: Carica Installer come Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: MFPCrawler-Installer-${{ inputs.customer_name }}-${{ inputs.customer_info }}
-        path: target/dist/*.exe
+        name: MFPCrawler-Installer- matrix.formato -{{ inputs.customer_name }}
+        path: |
+          target/dist/*.exe
+          target/dist/*.msi
+          target/dist/*.deb
+          target/dist/*.rpm
+          target/dist/*.dmg
         if-no-files-found: error
         retention-days: 7
+

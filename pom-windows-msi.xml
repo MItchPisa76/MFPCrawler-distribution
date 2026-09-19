@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>mtc.MFPCrawler</groupId>
+    <artifactId>mfpcrawler</artifactId>
+    <version>1.3.5</version>
+    <packaging>jar</packaging>
+
+    <name>MFPCrawler</name>
+    <description>MFPCrawler Distribution</description>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mtc.extraTag></mtc.extraTag>
+
+        <!-- PARAMETRI PREDEFINITI PER WIX / INSTALLER -->
+        <installer.nomeRegistrato>NONE</installer.nomeRegistrato>
+        <installer.infoReg>Licenza Enterprise</installer.infoReg>
+        <installer.server>http://192.168.1.100:8080</installer.server>        
+    </properties>
+
+    <build>
+        <plugins>
+            <!-- Compiler plugin per Java 17 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.5</version>
+                <configuration>
+                    <release>${maven.compiler.source}</release>
+                </configuration>
+            </plugin>
+
+            <!-- jpackage plugin per la creazione dell'installer Windows .exe -->
+            <plugin>
+                <groupId>org.panteleyev</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>1.7.0</version>
+                <configuration>
+                    <name>MFPCrawler</name>
+                    <appVersion>${project.version}${mtc.extraTag}</appVersion>
+                    <vendor>Mitch Pisa</vendor>
+                    <mainClass>mtc.MFPCrawler.MFPCrawler</mainClass>
+                    <mainJar>MFPCrawler${mtc.extraTag}-fat.jar</mainJar>
+                    <input>target</input>
+                    <destination>target/dist</destination>
+                    <type>EXE</type>
+                    <icon>src/main/resources/icon.ico</icon>
+
+                    <!-- Include l'ambiente Java -->
+                    <runtimeImage>${java.home}</runtimeImage>
+
+                    <!-- CHIAVE PER L'AGGIORNAMENTO AUTOMATICO -->
+                    <winUpgradeUuid>7833ab21-31fc-45df-86d2-e2b4be6a1324</winUpgradeUuid>
+
+                    <!-- Iniezione parametri per la schermata WelcomeCustomDlg -->
+                    <javaOptions>
+                        <option>-Dfile.encoding=UTF-8</option>
+                        <option>-DNOME_REGISTRATO="${installer.nomeRegistrato}"</option>
+                        <option>-DINFO_REGISTRAZIONE="${installer.infoReg}"</option>
+                        <option>-DPARAMETRO_SERVER="${installer.server}"</option>                       
+                    </javaOptions>
+
+                    <temp>int</temp>
+                    <resourceDir>src/main/jpackage/windows</resourceDir>
+                    <winMenu>true</winMenu>
+                    <winMenuGroup>MFPCrawler</winMenuGroup>
+                    <winShortcut>true</winShortcut>
+                    <winDirChooser>true</winDirChooser>
+                    <winPerUserInstall>false</winPerUserInstall>
+                    <winShortcutPrompt>true</winShortcutPrompt>
+                    <winConsole>false</winConsole>
+                    <verbose>true</verbose>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
