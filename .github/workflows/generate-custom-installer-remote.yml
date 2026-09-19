@@ -101,14 +101,14 @@ jobs:
     - name: SCRIPT DI INIEZIONE TOKEN (Eseguito nel Repo Pubblico)
       shell: bash
       run: |
-        PARAM_A="${{ inputs.param_a }}"
-        PARAM_B="${{ inputs.param_b }}"
+        PARAM_A="${{ inputs.customer_name }}"
+        PARAM_B="${{ inputs.customer_info }}"
         
         RAW_STRING="${PARAM_A}:${PARAM_B}:${{ inputs.token_extra }}"
         GENERATED_TOKEN=$(echo -n "$RAW_STRING" | base64)
         
-        echo "customer.name=${{ inputs.param_a }}\n" > token.properties
-        echo "user.token=${{ inputs.param_b }}\n" >> token.properties
+        echo "customer.name=${{ inputs.customer_name }}\n" > token.properties
+        echo "user.token=${{ inputs.customer_info }}\n" >> token.properties
         echo "app.token=$GENERATED_TOKEN" >> token.properties 
         
         "$JAVA_HOME/bin/jar" uf target/MFPCrawler-fat.jar token.properties
@@ -118,8 +118,8 @@ jobs:
     - name: Impacchetta Installer .exe con jpackage e Parametri
       run: |
         mvn jpackage:jpackage -X `
-          -Dinstaller.nomeRegistrato="${{ inputs.param_a }}" `
-          -Dinstaller.infoReg="${{ inputs.param_b }}" `
+          -Dinstaller.nomeRegistrato="${{ inputs.customer_name }}" `
+          -Dinstaller.infoReg="${{ inputs.customer_info }}" `
           -Dinstaller.server="${{ inputs.server_url }}"
 
     - name: Recupera i file temporanei della build
@@ -132,7 +132,7 @@ jobs:
     - name: Carica Installer .exe come Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: MFPCrawler-Installer-${{ inputs.param_a }}-${{ inputs.param_b }}
+        name: MFPCrawler-Installer-${{ inputs.customer_name }}-${{ inputs.customer_info }}
         path: target/dist/*.exe
         if-no-files-found: error
         retention-days: 7
