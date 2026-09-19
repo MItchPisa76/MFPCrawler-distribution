@@ -91,6 +91,18 @@
         <UI>
         <!-- Definizione dello stile mancante -->
     <TextStyle Id="WixUI_Font_Emphasized" FaceName="Tahoma" Size="8" Bold="yes" />
+
+    <!-- 1. IMPOSTA WELCOMECUSTOMDLG COME PRIMO DIALOGO DELLA SEQUENZA UI -->
+    <InstallUISequence>
+        <Show Dialog="WelcomeCustomDlg" Before="ExecuteAction">NOT Installed</Show>
+    </InstallUISequence>
+
+    <!-- 2. GESTIONE DEL TASTO 'Back' IN InstallDirDlg -->
+    <!-- (Se l'utente torna indietro dal dialogo di selezione cartella) -->
+    <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
+    <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
+    
+    
     <!-- DIALOGO 1: WelcomeCustomDlg -->
     <Dialog Id="WelcomeCustomDlg" Width="370" Height="270" Title="!(loc.ShortcutPromptDlg_Title)">
         <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="WixUI_Bmp_Dialog" />
