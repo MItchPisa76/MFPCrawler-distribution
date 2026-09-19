@@ -44,48 +44,42 @@ permissions:
   contents: write
 
 jobs:
+  # 🚀 JOB 1: Calcola ed emette SOLO la riga di configurazione richiesta
+  setup-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix_config: ${{ steps.set-matrix.outputs.config }}
+    steps:
+      - name: Genera configurazione mirata
+        id: set-matrix
+        shell: bash
+        run: |
+          CHOICE="${{ inputs.so_selected }}"
+          
+          if [ "$CHOICE" = "WIN64EXE" ]; then
+            JSON='{"formato":"WIN64EXE","os":"windows-latest","architecture":"x64","pom":"pom-windows.xml"}'
+          elif [ "$CHOICE" = "WIN64MSI" ]; then
+            JSON='{"formato":"WIN64MSI","os":"windows-latest","architecture":"x64","pom":"pom-windows-msi.xml"}'
+          elif [ "$CHOICE" = "WIN32EXE" ]; then
+            JSON='{"formato":"WIN32EXE","os":"windows-latest","architecture":"x86","pom":"pom-windows32.xml"}'
+          elif [ "$CHOICE" = "LINUXDEB" ]; then
+            JSON='{"formato":"LINUXDEB","os":"ubuntu-latest","architecture":"x64","pom":"pom-linux.xml"}'
+          elif [ "$CHOICE" = "LINUXRPM" ]; then
+            JSON='{"formato":"LINUXRPM","os":"ubuntu-latest","architecture":"x64","pom":"pom-linux-rpm.xml"}'
+          elif [ "$CHOICE" = "MACOSDMG" ]; then
+            JSON='{"formato":"MACOSDMG","os":"macos-latest","architecture":"x64","pom":"pom-macos.xml"}'
+          fi
+          
+          # Incapsula l'oggetto in un array JSON e lo invia come output del Job
+          echo "config=[$JSON]" >> $GITHUB_OUTPUT
+
+  # 🚀 JOB 2: Riceve l'array dinamico (composto da un solo elemento) e avvia il runner dedicato
   inject-and-build:
+    needs: setup-matrix
     strategy:
       matrix:
-        # Generiamo la lista di configurazioni
-        formato: [ 'WIN64EXE', 'WIN64MSI', 'WIN32EXE', 'LINUXDEB', 'LINUXRPM', 'MACOSDMG' ]
-        # Usiamo gli "exclude" per scartare istantaneamente TUTTI i formati tranne quello scelto dall'utente.
-        # GitHub Actions elabora questa logica PRIMA di allocare i server.
-        exclude:
-          - formato: ${{ inputs.so_selected == 'WIN64EXE' && 'none' || 'WIN64EXE' }}
-          - formato: ${{ inputs.so_selected == 'WIN64MSI' && 'none' || 'WIN64MSI' }}
-          - formato: ${{ inputs.so_selected == 'WIN32EXE' && 'none' || 'WIN32EXE' }}
-          - formato: ${{ inputs.so_selected == 'LINUXDEB' && 'none' || 'LINUXDEB' }}
-          - formato: ${{ inputs.so_selected == 'LINUXRPM' && 'none' || 'LINUXRPM' }}
-          - formato: ${{ inputs.so_selected == 'MACOSDMG' && 'none' || 'MACOSDMG' }}
-        
-        # Iniettiamo le variabili OS, Architettura e POM in base al formato superstite
-        include:
-          - formato: 'WIN64EXE'
-            os: windows-latest
-            architecture: x64
-            pom: pom-windows.xml
-          - formato: 'WIN64MSI'
-            os: windows-latest
-            architecture: x64
-            pom: pom-windows-msi.xml
-          - formato: 'WIN32EXE'
-            os: windows-latest
-            architecture: x86
-            pom: pom-windows32.xml
-          - formato: 'LINUXDEB'
-            os: ubuntu-latest
-            architecture: x64
-            pom: pom-linux.xml
-          - formato: 'LINUXRPM'
-            os: ubuntu-latest
-            architecture: x64
-            pom: pom-linux-rpm.xml
-          - formato: 'MACOSDMG'
-            os: macos-latest
-            architecture: x64
-            pom: pom-macos.xml
-
+        include: ${{ fromJson(needs.setup-matrix.outputs.matrix_config) }}
+            
     runs-on: ${{ matrix.os }}
 
     defaults:
