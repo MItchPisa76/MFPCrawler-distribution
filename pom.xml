@@ -16,6 +16,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mtc.extraTag></mtc.extraTag>
     </properties>
 
     <build>
@@ -37,10 +38,10 @@
     <version>1.7.0</version>
     <configuration>
         <name>MFPCrawler</name>
-        <appVersion>${project.version}</appVersion>
+        <appVersion>${project.version}${mtc.extraTag}</appVersion>
         <vendor>Mitch Pisa</vendor>
         <mainClass>mtc.MFPCrawler.MFPCrawler</mainClass>
-        <mainJar>MFPCrawler-fat.jar</mainJar>
+        <mainJar>MFPCrawler${mtc.extraTag}-fat.jar</mainJar>
         <input>target</input>
         <destination>target/dist</destination>
         <type>EXE</type>
