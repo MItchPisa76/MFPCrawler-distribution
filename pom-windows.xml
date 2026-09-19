@@ -69,12 +69,12 @@
 
                     <temp>int</temp>
                     <resourceDir>src/main/jpackage/windows</resourceDir>
-                    <winMenu>true</winMenu>
+                    <winMenu>false</winMenu>
                     <winMenuGroup>MFPCrawler</winMenuGroup>
-                    <winShortcut>true</winShortcut>
+                    <winShortcut>false</winShortcut>
                     <winDirChooser>true</winDirChooser>
                     <winPerUserInstall>false</winPerUserInstall>
-                    <winShortcutPrompt>true</winShortcutPrompt>
+                    <winShortcutPrompt>false</winShortcutPrompt>
                     <winConsole>false</winConsole>
                     <verbose>true</verbose>
                 </configuration>
