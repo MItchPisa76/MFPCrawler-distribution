@@ -21,11 +21,7 @@
     <?else?>
     <?define JpUpgradeVersionOnlyDetectDowngrade="yes"?>
     <?endif?>
-    <Fragment>
-      <!-- Include dei dialog personalizzati -->
-        <?include $(var.JpConfigDir)\WelcomeCustomDlg.wxi?>
-        <?include $(var.JpConfigDir)\ExistingVersionDlg.wxi?>
-    </Fragment>
+    
     <Product Id="$(var.JpProductCode)" Name="$(var.JpAppName)" Language="$(var.JpProductLanguage)" Version="$(var.JpAppVersion)" Manufacturer="$(var.JpAppVendor)" UpgradeCode="$(var.JpProductUpgradeCode)">
         <Package Description="$(var.JpAppDescription)" Manufacturer="$(var.JpAppVendor)" InstallerVersion="$(var.JpInstallerVersion)" Compressed="$(var.JpCompressedMsi)" InstallScope="$(var.JpInstallScope)" Platform="x64" />
         <Media Id="1" Cabinet="Data.cab" EmbedCab="yes" />

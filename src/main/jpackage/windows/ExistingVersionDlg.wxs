@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Include xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
     <UI>
       <Dialog Id="ExistingVersionDlg" Width="370" Height="270"
         Title="!(loc.ShortcutPromptDlg_Title)">
@@ -49,4 +50,5 @@
         </Control>
       </Dialog>
     </UI>
-</Include>
+  </Fragment>
+</Wix>
