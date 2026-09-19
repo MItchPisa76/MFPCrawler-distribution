@@ -129,6 +129,9 @@
 
         <!-- Configurazione personalizzata dell'Interfaccia Utente -->
         <UI>
+            <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+            <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+            <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
             <TextStyle Id="MfpFont_Emphasized" FaceName="Tahoma" Size="8" Bold="yes" />
 
             <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed</Publish>
