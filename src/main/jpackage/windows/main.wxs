@@ -25,6 +25,7 @@
     <Product Id="$(var.JpProductCode)" Name="$(var.JpAppName)" Language="$(var.JpProductLanguage)" Version="$(var.JpAppVersion)" Manufacturer="$(var.JpAppVendor)" UpgradeCode="$(var.JpProductUpgradeCode)">
         <Package Description="$(var.JpAppDescription)" Manufacturer="$(var.JpAppVendor)" InstallerVersion="$(var.JpInstallerVersion)" Compressed="$(var.JpCompressedMsi)" InstallScope="$(var.JpInstallScope)" Platform="x64" />
         <Media Id="1" Cabinet="Data.cab" EmbedCab="yes" />
+        <Directory Id="TARGETDIR" Name="SourceDir" />
         
         <Upgrade Id="$(var.JpProductUpgradeCode)">
             <UpgradeVersion OnlyDetect="$(var.JpUpgradeVersionOnlyDetectUpgrade)" Property="JP_UPGRADABLE_FOUND" Maximum="$(var.JpAppVersion)" MigrateFeatures="yes" IncludeMaximum="$(var.JpUpgradeVersionOnlyDetectUpgrade)" />
@@ -85,7 +86,7 @@
         <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
         
         <!-- Custom Action per la disinstallazione preventiva (Usa la proprietà MFPCRAWLER_EXISTING_FOUND) -->
-        <CustomAction Id="CA_UninstallPrevious" Directory="SystemFolder" ExeCommand="&quot;[SystemFolder]msiexec.exe&quot; /x [MFPCRAWLER_EXISTING_FOUND] /qb" Return="asyncNoWait" />
+        <CustomAction Id="CA_UninstallPrevious" Directory="TARGETDIR" ExeCommand="&quot;[SystemFolder]msiexec.exe&quot; /x [MFPCRAWLER_EXISTING_FOUND] /qb" Return="asyncNoWait" />
 
         <!-- Custom Action per avviare l'applicazione al termine dell'installazione -->
         <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Avvia $(var.JpAppName) adesso" />
