@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Fragment>
-    <UI>
+  <UI>
       <Dialog Id="WelcomeCustomDlg" Width="370" Height="270" Title="!(loc.ShortcutPromptDlg_Title)">
         <!-- Immagine di sfondo e linea inferiore -->
         <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="WixUI_Bmp_Dialog" />
@@ -32,5 +31,4 @@
         </Control>
       </Dialog>
     </UI>
-  </Fragment>
 </Include>
