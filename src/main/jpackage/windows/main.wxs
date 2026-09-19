@@ -25,7 +25,10 @@
     <Product Id="$(var.JpProductCode)" Name="$(var.JpAppName)" Language="$(var.JpProductLanguage)" Version="$(var.JpAppVersion)" Manufacturer="$(var.JpAppVendor)" UpgradeCode="$(var.JpProductUpgradeCode)">
         <Package Description="$(var.JpAppDescription)" Manufacturer="$(var.JpAppVendor)" InstallerVersion="$(var.JpInstallerVersion)" Compressed="$(var.JpCompressedMsi)" InstallScope="$(var.JpInstallScope)" Platform="x64" />
         <Media Id="1" Cabinet="Data.cab" EmbedCab="yes" />
-        <Directory Id="TARGETDIR" Name="SourceDir" />
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramMenuFolder" />
+            <Directory Id="DesktopFolder" />
+        </Directory>
         
         <Upgrade Id="$(var.JpProductUpgradeCode)">
             <UpgradeVersion OnlyDetect="$(var.JpUpgradeVersionOnlyDetectUpgrade)" Property="JP_UPGRADABLE_FOUND" Maximum="$(var.JpAppVersion)" MigrateFeatures="yes" IncludeMaximum="$(var.JpUpgradeVersionOnlyDetectUpgrade)" />
@@ -126,10 +129,10 @@
 
             <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed</Publish>
 
-            <!-- Flusso: WelcomeDlg (stock) -> WelcomeCustomDlg -> [ExistingVersionDlg] -> License -> InstallDir -> ShortcutPromptDlg -> VerifyReady -->
+            <!-- Flusso: WelcomeDlg (stock) -> WelcomeCustomDlg -> [ExistingVersionDlg] -> License -> InstallDir -> MfpShortcutDlg -> VerifyReady -->
             <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="WelcomeCustomDlg" Order="999">NOT Installed</Publish>
-            <Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="ShortcutPromptDlg" Order="999">WIXUI_DONTVALIDATEPATH OR WIXUI_INSTALLDIR_VALID="1"</Publish>
-            <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="ShortcutPromptDlg" Order="999">NOT Installed</Publish>
+            <Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="MfpShortcutDlg" Order="999">WIXUI_DONTVALIDATEPATH OR WIXUI_INSTALLDIR_VALID="1"</Publish>
+            <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MfpShortcutDlg" Order="999">NOT Installed</Publish>
             <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg" Order="999">1</Publish>
 
             <!-- DIALOGO 1: WelcomeCustomDlg -->
@@ -193,8 +196,8 @@
             </Dialog>
 
 
-            <!-- DIALOGO 3: ShortcutPromptDlg -->
-            <Dialog Id="ShortcutPromptDlg" Width="370" Height="270" Title="[ProductName] Setup">
+            <!-- DIALOGO 3: MfpShortcutDlg -->
+            <Dialog Id="MfpShortcutDlg" Width="370" Height="270" Title="[ProductName] Setup">
                 <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
                 <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
                 <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
