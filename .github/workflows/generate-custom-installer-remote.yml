@@ -81,6 +81,8 @@ jobs:
           --repo "MitchPisa76/MFPCrawler" \
           --pattern "MFPCrawler-fat.jar" \
           --dir target/
+
+        echo "Copia files .wxi"
         ls int/config/
 	cp src/main/jpackage/windows/*.wxi int/config/ -f
     - name: Inietta Certificato SSL se fornito
