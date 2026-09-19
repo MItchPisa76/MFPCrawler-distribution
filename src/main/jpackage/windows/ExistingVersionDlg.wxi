@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Fragment>
-    <UI>
+<Include xmlns="http://schemas.microsoft.com/wix/2006/wi">
       <Dialog Id="ExistingVersionDlg" Width="370" Height="270"
         Title="!(loc.ShortcutPromptDlg_Title)">
         <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no"
@@ -49,6 +47,5 @@
           <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
         </Control>
       </Dialog>
-    </UI>
-  </Fragment>
-</Wix>
+      </Include>
+ 
