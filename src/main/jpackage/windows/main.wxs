@@ -64,10 +64,9 @@
         <Property Id="PARAMETRO_SERVER" Value="myhist" />
         <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
         
-        <!-- Custom Action per la disinstallazione -->
-        <CustomAction Id="CA_UninstallPrevious" Directory="TARGETDIR" ExeCommand="msiexec /x [MFPCRAWLER_EXISTING_FOUND] /qb" Return="asyncWait" />
+        <!-- Custom Action corretta per la disinstallazione tramite SystemFolder exe -->
+        <CustomAction Id="CA_UninstallPrevious" Directory="SystemFolder" ExeCommand="msiexec.exe /x [MFPCRAWLER_EXISTING_FOUND] /qb" Return="asyncNoWait" />
 
-        <!-- Utilizziamo l'estensione WixUI standard per abilitare i dialoghi base -->
         <UIRef Id="WixUI_InstallDir" />
         <UIRef Id="WixUI_ErrorProgressText" />
         
@@ -88,14 +87,16 @@
         
         <InstallUISequence>
             <Custom Action="JpFindRelatedProducts" After="FindRelatedProducts" />
-            <!-- Forziamo l'apertura di WelcomeCustomDlg all'avvio dell'installer -->
-            <Show Dialog="WelcomeCustomDlg" Before="ExecuteAction">NOT Installed</Show>
         </InstallUISequence>
 
-        <!-- Configurazione della sequenza dell'Interfaccia Utente -->
+        <!-- Configurazione della sequenza dell'Interfaccia Utente Custom -->
         <UI>
-            <!-- Definizione dello stile di testo mancante -->
             <TextStyle Id="WixUI_Font_Emphasized" FaceName="Tahoma" Size="8" Bold="yes" />
+
+            <!-- Override del punto di ingresso: avvia subito WelcomeCustomDlg al posto di WelcomeDlg -->
+            <Publish Dialog="BrowseDlg" Control="OK" Event="DoAction" Value="WixUIValidatePath" Order="1">1</Publish>
+            <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
+            <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
 
             <!-- DIALOGO 1: WelcomeCustomDlg -->
             <Dialog Id="WelcomeCustomDlg" Width="370" Height="270" Title="!(loc.ShortcutPromptDlg_Title)">
@@ -111,7 +112,10 @@
                 <Control Id="ServerLabel" Type="Text" X="135" Y="108" Width="220" Height="12" Transparent="yes" Text="{\WixUI_Font_Emphasized}Server di destinazione:" />
                 <Control Id="ServerParam" Type="Text" X="135" Y="122" Width="220" Height="15" Transparent="yes" Text="[PARAMETRO_SERVER]" />
 
-                <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+                <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
+                    <Publish Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
+                    <Publish Event="NewDialog" Value="InstallDirDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
+                </Control>
                 <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
                     <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
                 </Control>
@@ -126,7 +130,6 @@
                 <Control Id="Title" Type="Text" X="15" Y="6" Width="300" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Rilevata versione precedente" />
                 <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes" Text="Seleziona l'azione da eseguire per la versione esistente." />
 
-                <!-- Controllo RadioButtonGroup -->
                 <Control Id="ActionRadioGroup" Type="RadioButtonGroup" X="30" Y="60" Width="300" Height="120" Property="EXISTING_ACTION" />
 
                 <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
@@ -144,19 +147,17 @@
                 </Control>
             </Dialog>
 
-            <!-- Opzioni del RadioButtonGroup inserite a livello di <UI> -->
+            <!-- Scelte per RadioButtonGroup -->
             <RadioButtonGroup Property="EXISTING_ACTION">
                 <RadioButton Value="UPDATE" Text="Aggiorna la versione esistente (mantiene le configurazioni)" X="0" Y="0" Width="290" Height="25" />
                 <RadioButton Value="OVERWRITE" Text="Sovrascrivi completamente (sostituisce tutti i file)" X="0" Y="30" Width="290" Height="25" />
                 <RadioButton Value="UNINSTALL" Text="Disinstalla la versione precedente ed esci" X="0" Y="60" Width="290" Height="25" />
             </RadioButtonGroup>
 
-            <!-- Flussi di navigazione della sequenza UI -->
-            <Publish Dialog="WelcomeCustomDlg" Control="Next" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
-            <Publish Dialog="WelcomeCustomDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
-
-            <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
-            <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
+            <!-- Sovrascrive la sequenza di avvio standard rimpiazzando WelcomeDlg di WixUI -->
+            <InstallUISequence>
+                <Show Dialog="WelcomeCustomDlg" Before="ProgressDlg">NOT Installed</Show>
+            </InstallUISequence>
         </UI>
     </Product>
 </Wix>
