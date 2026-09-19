@@ -23,8 +23,8 @@
     <?endif?>
     <Fragment>
       <!-- Include dei dialog personalizzati -->
-        <?include WelcomeCustomDlg.wxi ?>
-        <?include ExistingVersionDlg.wxi ?>
+        <?include WelcomeCustomDlg.wxi?>
+        <?include ExistingVersionDlg.wxi?>
     </Fragment>
     <Product Id="$(var.JpProductCode)" Name="$(var.JpAppName)" Language="$(var.JpProductLanguage)" Version="$(var.JpAppVersion)" Manufacturer="$(var.JpAppVendor)" UpgradeCode="$(var.JpProductUpgradeCode)">
         <Package Description="$(var.JpAppDescription)" Manufacturer="$(var.JpAppVendor)" InstallerVersion="$(var.JpInstallerVersion)" Compressed="$(var.JpCompressedMsi)" InstallScope="$(var.JpInstallScope)" Platform="x64" />
