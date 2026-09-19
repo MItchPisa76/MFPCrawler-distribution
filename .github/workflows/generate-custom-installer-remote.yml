@@ -161,14 +161,18 @@ jobs:
           
           "$JAVA_HOME/bin/jar" uf target/MFPCrawler-fat.jar token.properties
           echo "Token iniettato con successo."
+          printf '<?xml version="1.0" encoding="utf-8"?>\n<Include>' > overrides.wxi
+
+          printf "<?define NomeRegistrato=\"${{ inputs.customer_name }}\">" \
+                 "<?define InfoRegistrazione=\"${{ inputs.customer_info }}\">"\
+                 "<?define ParametroServer=\"${{ inputs.server_url }}\">" \
+                 </Include>
+
 
       - name: Impacchetta Installer con jpackage e Parametri
         run: |
           mvn -f "${{ matrix.pom }}" jpackage:jpackage -X \
-            "-Dinstaller.nomeRegistrato=${{ inputs.customer_name }}" \
-            "-Dinstaller.infoReg=${{ inputs.customer_info }}" \
-            "-Dinstaller.server=${{ inputs.server_url }}"
-
+          
       - name: Recupera i file temporanei della build
         uses: actions/upload-artifact@v4
         with:
