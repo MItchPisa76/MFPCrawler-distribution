@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WixLocalization Culture="it-it" xmlns="http://schemas.microsoft.com/wix/2006/localization" Codepage="1252">
-  <String Id="message.install.dir.exist">La cartella [INSTALLDIR] esiste già. Installare comunque in questa cartella?</String>
-  <String Id="MainFeatureTitle">Funzionalità principale</String>
-  <String Id="DowngradeErrorMessage">È già installata una versione più recente di [ProductName]. Le versioni precedenti non possono essere installate. L'installazione verrà interrotta.</String>
-  <String Id="DisallowUpgradeErrorMessage">È già installata una versione precedente di [ProductName]. Gli aggiornamenti sono disabilitati. L'installazione verrà interrotta.</String>
+  <String Id="message.install.dir.exist" Overridable="yes">La cartella [INSTALLDIR] esiste già. Installare comunque in questa cartella?</String>
+  <String Id="MainFeatureTitle" Overridable="yes">Funzionalità principale</String>
+  <String Id="DowngradeErrorMessage" Overridable="yes">È già installata una versione più recente di [ProductName]. Le versioni precedenti non possono essere installate. L'installazione verrà interrotta.</String>
+  <String Id="DisallowUpgradeErrorMessage" Overridable="yes">È già installata una versione precedente di [ProductName]. Gli aggiornamenti sono disabilitati. L'installazione verrà interrotta.</String>
 
-  <String Id="ShortcutPromptDlg_Title">Installazione di [ProductName]</String>
-  <String Id="ShortcutPromptDlgTitle">{\WixUI_Font_Title}Collegamenti</String>
-  <String Id="ShortcutPromptDlgBannerBitmap">WixUI_Bmp_Banner</String>
-  <String Id="ShortcutPromptDlgDescription">Seleziona i collegamenti da creare.</String>
-  <String Id="ShortcutPromptDlgDesktopShortcutControlLabel">Crea collegamento/i sul desktop</String>
-  <String Id="ShortcutPromptDlgStartMenuShortcutControlLabel">Crea collegamento/i nel menu Start</String>
-  <String Id="InstallDirNotEmptyDlg_Title">Installazione di [ProductName]</String>
-  <String Id="ContextMenuCommandLabel">Apri con [ProductName]</String>
+  <String Id="ShortcutPromptDlg_Title" Overridable="yes">Installazione di [ProductName]</String>
+  <String Id="ShortcutPromptDlgTitle" Overridable="yes">{\WixUI_Font_Title}Collegamenti</String>
+  <String Id="ShortcutPromptDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="ShortcutPromptDlgDescription" Overridable="yes">Seleziona i collegamenti da creare.</String>
+  <String Id="ShortcutPromptDlgDesktopShortcutControlLabel" Overridable="yes">Crea collegamento/i sul desktop</String>
+  <String Id="ShortcutPromptDlgStartMenuShortcutControlLabel" Overridable="yes">Crea collegamento/i nel menu Start</String>
+  <String Id="InstallDirNotEmptyDlg_Title" Overridable="yes">Installazione di [ProductName]</String>
+  <String Id="ContextMenuCommandLabel" Overridable="yes">Apri con [ProductName]</String>
 </WixLocalization>

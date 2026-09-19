@@ -66,6 +66,7 @@
         <winPerUserInstall>false</winPerUserInstall>
         <winShortcutPrompt>true</winShortcutPrompt>
         <winConsole>false</winConsole>
+        <verbose>true</verbose>
     </configuration>
 </plugin>
         </plugins>
