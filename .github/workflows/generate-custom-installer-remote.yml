@@ -7,11 +7,11 @@ on:
         description: 'Tag Versione dal Repo Privato (es. v1.0.0)'
         required: true    
         default: 'Newt2.0'
-      param_a:
+      customer_name:
         description: 'Customer Name (es.Cliente)'
         required: true
         default: 'CLIENT_001'
-      param_b:
+      customer_info:
         description: 'Customer TokenI (es. IDUNivoco)'
         required: true
         default: 'KEY_ABC123'
