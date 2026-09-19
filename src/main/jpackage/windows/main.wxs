@@ -89,61 +89,66 @@
 
         <!-- Configurazione della sequenza dell'Interfaccia Utente -->
         <UI>
-            <!-- DIALOGO 1: WelcomeCustomDlg -->
-            <Dialog Id="WelcomeCustomDlg" Width="370" Height="270" Title="!(loc.ShortcutPromptDlg_Title)">
-                <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="WixUI_Bmp_Dialog" />
-                <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
-                
-                <Control Id="Title" Type="Text" X="135" Y="12" Width="220" Height="30" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Benvenuti nell'installazione di MFPCrawler" />
+    <!-- DIALOGO 1: WelcomeCustomDlg -->
+    <Dialog Id="WelcomeCustomDlg" Width="370" Height="270" Title="!(loc.ShortcutPromptDlg_Title)">
+        <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="WixUI_Bmp_Dialog" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        
+        <Control Id="Title" Type="Text" X="135" Y="12" Width="220" Height="30" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Benvenuti nell'installazione di MFPCrawler" />
 
-                <Control Id="RegisteredToLabel" Type="Text" X="135" Y="48" Width="220" Height="12" Transparent="yes" Text="{\WixUI_Font_Emphasized}Installazione dedicata per:" />
-                <Control Id="RegisteredName" Type="Text" X="135" Y="62" Width="220" Height="12" Transparent="yes" Text="[NOME_REGISTRATO]" />
-                <Control Id="RegisteredInfo" Type="Text" X="135" Y="76" Width="220" Height="25" Transparent="yes" Text="[INFO_REGISTRAZIONE]" />
+        <Control Id="RegisteredToLabel" Type="Text" X="135" Y="48" Width="220" Height="12" Transparent="yes" Text="{\WixUI_Font_Emphasized}Installazione dedicata per:" />
+        <Control Id="RegisteredName" Type="Text" X="135" Y="62" Width="220" Height="12" Transparent="yes" Text="[NOME_REGISTRATO]" />
+        <Control Id="RegisteredInfo" Type="Text" X="135" Y="76" Width="220" Height="25" Transparent="yes" Text="[INFO_REGISTRAZIONE]" />
 
-                <Control Id="ServerLabel" Type="Text" X="135" Y="108" Width="220" Height="12" Transparent="yes" Text="{\WixUI_Font_Emphasized}Server di destinazione:" />
-                <Control Id="ServerParam" Type="Text" X="135" Y="122" Width="220" Height="15" Transparent="yes" Text="[PARAMETRO_SERVER]" />
+        <Control Id="ServerLabel" Type="Text" X="135" Y="108" Width="220" Height="12" Transparent="yes" Text="{\WixUI_Font_Emphasized}Server di destinazione:" />
+        <Control Id="ServerParam" Type="Text" X="135" Y="122" Width="220" Height="15" Transparent="yes" Text="[PARAMETRO_SERVER]" />
 
-                <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
-                <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
-                    <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
-                </Control>
-            </Dialog>
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+            <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+    </Dialog>
 
-            <!-- DIALOGO 2: ExistingVersionDlg -->
-            <Dialog Id="ExistingVersionDlg" Width="370" Height="270" Title="!(loc.ShortcutPromptDlg_Title)">
-                <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="!(loc.ShortcutPromptDlgBannerBitmap)" />
-                <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
-                <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+    <!-- DIALOGO 2: ExistingVersionDlg -->
+    <Dialog Id="ExistingVersionDlg" Width="370" Height="270" Title="!(loc.ShortcutPromptDlg_Title)">
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="!(loc.ShortcutPromptDlgBannerBitmap)" />
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
 
-                <Control Id="Title" Type="Text" X="15" Y="6" Width="300" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Rilevata versione precedente" />
-                <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes" Text="Seleziona l'azione da eseguire per la versione esistente." />
-<RadioButtonGroup  Property="EXISTING_ACTION">
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="300" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Rilevata versione precedente" />
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes" Text="Seleziona l'azione da eseguire per la versione esistente." />
+
+        <!-- CONTROL: Solo la dichiarazione senza opzioni all'interno -->
+        <Control Id="ActionRadioGroup" Type="RadioButtonGroup" X="30" Y="60" Width="300" Height="120" Property="EXISTING_ACTION" />
+
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
+            <Publish Event="DoAction" Value="CA_UninstallPrevious">EXISTING_ACTION = "UNINSTALL"</Publish>
+            <Publish Event="EndDialog" Value="Exit">EXISTING_ACTION = "UNINSTALL"</Publish>
+            <Publish Event="NewDialog" Value="InstallDirDlg">EXISTING_ACTION = "UPDATE" OR EXISTING_ACTION = "OVERWRITE"</Publish>
+        </Control>
+
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)">
+            <Publish Event="NewDialog" Value="WelcomeCustomDlg">1</Publish>
+        </Control>
+
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+            <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+    </Dialog>
+
+    <!-- DEFINIZIONE RADIOBUTTON: Fuori dai Dialog, dentro <UI> -->
+    <RadioButtonGroup Property="EXISTING_ACTION">
         <RadioButton Value="UPDATE" Text="Aggiorna la versione esistente (mantiene le configurazioni)" X="0" Y="0" Width="290" Height="25" />
         <RadioButton Value="OVERWRITE" Text="Sovrascrivi completamente (sostituisce tutti i file)" X="0" Y="30" Width="290" Height="25" />
         <RadioButton Value="UNINSTALL" Text="Disinstalla la versione precedente ed esci" X="0" Y="60" Width="290" Height="25" />
     </RadioButtonGroup>
-                <Control Id="ActionRadioGroup" Type="RadioButtonGroup" X="30" Y="60" Width="300" Height="120" Property="EXISTING_ACTION" />
-                <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
-                    <Publish Event="DoAction" Value="CA_UninstallPrevious">EXISTING_ACTION = "UNINSTALL"</Publish>
-                    <Publish Event="EndDialog" Value="Exit">EXISTING_ACTION = "UNINSTALL"</Publish>
-                    <Publish Event="NewDialog" Value="InstallDirDlg">EXISTING_ACTION = "UPDATE" OR EXISTING_ACTION = "OVERWRITE"</Publish>
-                </Control>
 
-                <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)">
-                    <Publish Event="NewDialog" Value="WelcomeCustomDlg">1</Publish>
-                </Control>
+    <!-- Flussi di navigazione tra i dialoghi -->
+    <Publish Dialog="WelcomeCustomDlg" Control="Next" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
+    <Publish Dialog="WelcomeCustomDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
 
-                <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
-                    <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
-                </Control>
-            </Dialog>
-
-            <!-- Flussi di navigazione tra i dialoghi -->
-            <Publish Dialog="WelcomeCustomDlg" Control="Next" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
-            <Publish Dialog="WelcomeCustomDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
-
-            <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
-            <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
-        </UI>
+    <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
+    <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
+</UI>
     </Product>
 </Wix>

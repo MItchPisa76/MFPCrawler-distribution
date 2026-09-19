@@ -82,9 +82,8 @@ jobs:
           --pattern "MFPCrawler-fat.jar" \
           --dir target/
 
-        echo "Copia files .wxi"
               
-    - name: Inietta Certificato SSL se fornito
+    - name: Inietta Certificato SSL
       shell: bash
       run: |
         CERT_CONTENT="${{ inputs.ssl_cert }}"
