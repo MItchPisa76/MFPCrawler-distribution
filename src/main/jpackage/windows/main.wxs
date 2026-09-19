@@ -89,6 +89,8 @@
 
         <!-- Configurazione della sequenza dell'Interfaccia Utente -->
         <UI>
+        <!-- Definizione dello stile mancante -->
+    <TextStyle Id="WixUI_Font_Emphasized" FaceName="Tahoma" Size="8" Bold="yes" />
     <!-- DIALOGO 1: WelcomeCustomDlg -->
     <Dialog Id="WelcomeCustomDlg" Width="370" Height="270" Title="!(loc.ShortcutPromptDlg_Title)">
         <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="WixUI_Bmp_Dialog" />
