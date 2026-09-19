@@ -83,7 +83,7 @@ jobs:
           --dir target/
 
         echo "Copia files .wxi"
-        ls int/config/
+        ls
         cp src/main/jpackage/windows/*.wxi int/config/ -f
         
     - name: Inietta Certificato SSL se fornito
