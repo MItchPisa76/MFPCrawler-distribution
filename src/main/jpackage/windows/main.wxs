@@ -43,17 +43,10 @@
         <Binary Id="JpCaDll" SourceFile="wixhelper.dll" />
         <CustomAction Id="JpFindRelatedProducts" BinaryKey="JpCaDll" DllEntry="FindRelatedProductsEx" />
         
-        <!-- Struttura delle Directory dell'installer -->
-        <Directory Id="TARGETDIR" Name="SourceDir">
-            <Directory Id="SystemFolder" Name="System32" />
-            <Directory Id="ProgramFiles64Folder">
-                <Directory Id="INSTALLDIR" Name="$(var.JpAppName)" />
-            </Directory>
-            <Directory Id="ProgramMenuFolder">
-                <Directory Id="ApplicationProgramsFolder" Name="$(var.JpAppName)" />
-            </Directory>
-            <Directory Id="DesktopFolder" Name="Desktop" />
-        </Directory>
+        <!-- Riferimento alle Directory create da jpackage in bundle.wxf per evitare errori LGHT0091 -->
+        <DirectoryRef Id="ProgramMenuFolder">
+            <Directory Id="ApplicationProgramsFolder" Name="$(var.JpAppName)" />
+        </DirectoryRef>
 
         <!-- Collegamenti / Icone nel Menu Start e Desktop -->
         <DirectoryRef Id="ApplicationProgramsFolder">
@@ -117,39 +110,18 @@
             <RemoveExistingProducts Before="CostInitialize" />
             <Custom Action="JpFindRelatedProducts" After="FindRelatedProducts" />
         </InstallExecuteSequence>
-        
+
         <InstallUISequence>
             <Custom Action="JpFindRelatedProducts" After="FindRelatedProducts" />
+            <Show Dialog="WelcomeCustomDlg" Before="ProgressDlg">NOT Installed</Show>
         </InstallUISequence>
 
-        <!-- Configurazione personalizzata del flusso UI -->
+        <!-- Configurazione personalizzata dell'Interfaccia Utente -->
         <UI>
             <TextStyle Id="WixUI_Font_Emphasized" FaceName="Tahoma" Size="8" Bold="yes" />
 
-            <!-- 1. SOSTITUZIONE WELCOMEDLG STANDARD CON WELCOMECUSTOMDLG -->
-            <!-- Quando l'installer parte, va su WelcomeCustomDlg invece che su WelcomeDlg -->
+            <!-- Reindirizzamento e integrazione nella sequenza WixUI -->
             <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="WelcomeCustomDlg">1</Publish>
-            
-            <!-- NAVIGAZIONE DA WelcomeCustomDlg -->
-            <!-- Se esiste un'installazione precedente -> ExistingVersionDlg, altrimenti -> LicenseAgreementDlg -->
-            <Publish Dialog="WelcomeCustomDlg" Control="Next" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
-            <Publish Dialog="WelcomeCustomDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
-
-            <!-- NAVIGAZIONE DA ExistingVersionDlg -->
-            <!-- Avanti va verso LicenseAgreementDlg, Indietro torna a WelcomeCustomDlg -->
-            <Publish Dialog="ExistingVersionDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg">1</Publish>
-
-            <!-- NAVIGAZIONE DA LicenseAgreementDlg -->
-            <!-- Indietro torna a ExistingVersionDlg o a WelcomeCustomDlg in base alla presenza di vecchie installazioni -->
-            <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
-            <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
-            <!-- Avanti passa alla selezione cartella -->
-            <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg">LicenseAccepted = "1"</Publish>
-
-            <!-- NAVIGAZIONE DA InstallDirDlg -->
-            <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="LicenseAgreementDlg">1</Publish>
-
-            <!-- AVVIO APPLICAZIONE SULLA SCHERMATA FINALE -->
             <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed</Publish>
 
             <!-- DIALOGO 1: WelcomeCustomDlg -->
@@ -166,7 +138,11 @@
                 <Control Id="ServerLabel" Type="Text" X="135" Y="108" Width="220" Height="12" Transparent="yes" Text="{\WixUI_Font_Emphasized}Server di destinazione:" />
                 <Control Id="ServerParam" Type="Text" X="135" Y="122" Width="220" Height="15" Transparent="yes" Text="[PARAMETRO_SERVER]" />
 
-                <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+                <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
+                    <Publish Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
+                    <Publish Event="NewDialog" Value="LicenseAgreementDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
+                </Control>
+
                 <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
                     <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
                 </Control>
@@ -203,11 +179,6 @@
                 <RadioButton Value="OVERWRITE" Text="Sovrascrivi completamente (sostituisce tutti i file)" X="0" Y="30" Width="290" Height="25" />
                 <RadioButton Value="UNINSTALL" Text="Disinstalla la versione precedente ed esci" X="0" Y="60" Width="290" Height="25" />
             </RadioButtonGroup>
-
-            <!-- Forziamo la WelcomeCustomDlg nell'UISequence dell'installatore -->
-            <InstallUISequence>
-                <Show Dialog="WelcomeCustomDlg" Before="ExistingVersionDlg">NOT Installed</Show>
-            </InstallUISequence>
         </UI>
     </Product>
 </Wix>
