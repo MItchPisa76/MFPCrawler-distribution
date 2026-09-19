@@ -43,16 +43,12 @@
         <Binary Id="JpCaDll" SourceFile="wixhelper.dll" />
         <CustomAction Id="JpFindRelatedProducts" BinaryKey="JpCaDll" DllEntry="FindRelatedProductsEx" />
         
-        <!-- Struttura delle Directory Base richiesta da WiX per risolvere TARGETDIR e SystemFolder -->
-        <Directory Id="TARGETDIR" Name="SourceDir">
-            <Directory Id="SystemFolder" Name="System32" />
-            <Directory Id="ProgramFiles64Folder" />
-            <Directory Id="ProgramMenuFolder">
-                <Directory Id="ApplicationProgramsFolder" Name="$(var.JpAppName)" />
-            </Directory>
-        </Directory>
+        <!-- Collegamento alla cartella del Menu Start usando la struttura generata da jpackage -->
+        <DirectoryRef Id="ProgramMenuFolder">
+            <Directory Id="ApplicationProgramsFolder" Name="$(var.JpAppName)" />
+        </DirectoryRef>
 
-        <!-- Collegamenti / Icone nel Menu Start e Desktop (Usa DesktopFolder e INSTALLDIR definiti in bundle.wxf) -->
+        <!-- Collegamenti / Icone nel Menu Start e Desktop -->
         <DirectoryRef Id="ApplicationProgramsFolder">
             <Component Id="ApplicationShortcut" Guid="*">
                 <Shortcut Id="ApplicationStartMenuShortcut" Name="$(var.JpAppName)" Description="$(var.JpAppDescription)" Target="[INSTALLDIR]$(var.JpAppName).exe" WorkingDirectory="INSTALLDIR" />
@@ -88,8 +84,8 @@
         <Property Id="PARAMETRO_SERVER" Value="myhist" />
         <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
         
-        <!-- Custom Action per la disinstallazione preventiva -->
-        <CustomAction Id="CA_UninstallPrevious" Directory="SystemFolder" ExeCommand="msiexec.exe /x [MFPCRAWLER_EXISTING_FOUND] /qb" Return="asyncNoWait" />
+        <!-- Custom Action per la disinstallazione preventiva (Usa la proprietà MFPCRAWLER_EXISTING_FOUND) -->
+        <CustomAction Id="CA_UninstallPrevious" Property="SystemFolder" ExeCommand="msiexec.exe /x [MFPCRAWLER_EXISTING_FOUND] /qb" Return="asyncNoWait" />
 
         <!-- Custom Action per avviare l'applicazione al termine dell'installazione -->
         <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Avvia $(var.JpAppName) adesso" />
@@ -117,7 +113,6 @@
 
         <InstallUISequence>
             <Custom Action="JpFindRelatedProducts" After="FindRelatedProducts" />
-            <!-- Avvia la sequenza grafica direttamente dal dialogo custom -->
             <Show Dialog="WelcomeCustomDlg" Before="ProgressDlg">NOT Installed</Show>
         </InstallUISequence>
 
@@ -125,7 +120,6 @@
         <UI>
             <TextStyle Id="WixUI_Font_Emphasized" FaceName="Tahoma" Size="8" Bold="yes" />
 
-            <!-- Esegue LaunchApplication al click su Finish nella ExitDialog -->
             <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed</Publish>
 
             <!-- DIALOGO 1: WelcomeCustomDlg -->
