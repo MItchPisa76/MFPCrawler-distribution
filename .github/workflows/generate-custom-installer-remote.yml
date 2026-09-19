@@ -74,14 +74,22 @@ jobs:
             pom: pom-macos.xml
             
     runs-on: ${{ matrix.os }}
-    if: matrix.formato == inputs.so_selected
 
     defaults:
       run:
         shell: bash
 
     steps:    
+      - name: Verifica corrispondenza formato ed esegui build
+        # 🚀 RISOLUZIONE: Controlliamo la corrispondenza qui. Se il formato della matrice 
+        # non coincide con la scelta dell'utente, l'intero flusso di questo runner si blocca subito.
+        if: matrix.formato != inputs.so_selected
+        run: |
+          echo "Formato della matrice (${{ matrix.formato }}) non richiesto dall'utente (${{ inputs.so_selected }}). Salto la build."
+          exit 0
+
       - name: Mostra i parametri nei log e nel sommario
+        if: matrix.formato == inputs.so_selected
         run: |
           echo "### 🚀 Parametri di input utilizzati" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -97,17 +105,19 @@ jobs:
           echo "| **Eseguito da** | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
 
       - name: Controlla repository pubblico
+        if: matrix.formato == inputs.so_selected
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Installa dipendenze per pacchetti RPM (Solo su Linux RPM)
-        if: ${{ matrix.formato == 'LINUXRPM' }}
+        if: matrix.formato == 'LINUXRPM' && inputs.so_selected == 'LINUXRPM'
         run: |
           sudo apt-get update
           sudo apt-get install -y rpm
 
       - name: Configura Java (Dinamico per versione e architettura)
+        if: matrix.formato == inputs.so_selected
         uses: actions/setup-java@v5
         with:
           java-version: '21'
@@ -115,9 +125,11 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Prepara cartella target
+        if: matrix.formato == inputs.so_selected
         run: mkdir -p target
 
       - name: Scarica Fat JAR dal Repository Privato
+        if: matrix.formato == inputs.so_selected
         env:
           GH_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
         run: |
@@ -129,6 +141,7 @@ jobs:
             --dir target/
                 
       - name: Inietta Certificato SSL
+        if: matrix.formato == inputs.so_selected
         run: |
           CERT_CONTENT="${{ inputs.ssl_cert }}"
           if [ -n "$CERT_CONTENT" ]; then
@@ -143,6 +156,7 @@ jobs:
           fi
 
       - name: SCRIPT DI INIEZIONE TOKEN
+        if: matrix.formato == inputs.so_selected
         run: |
           PARAM_A="${{ inputs.customer_name }}"
           PARAM_B="${{ inputs.customer_info }}"
@@ -157,6 +171,7 @@ jobs:
           echo "Token iniettato con successo."
 
       - name: Impacchetta Installer con jpackage e Parametri
+        if: matrix.formato == inputs.so_selected
         run: |
           mvn -f "${{ matrix.pom }}" jpackage:jpackage -X \
             "-Dinstaller.nomeRegistrato=${{ inputs.customer_name }}" \
@@ -164,6 +179,7 @@ jobs:
             "-Dinstaller.server=${{ inputs.server_url }}"
 
       - name: Recupera i file temporanei della build
+        if: matrix.formato == inputs.so_selected
         uses: actions/upload-artifact@v4
         with:
           name: jpackage-temp-files-${{ matrix.formato }}
@@ -171,6 +187,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Carica Installer come Artifact
+        if: matrix.formato == inputs.so_selected
         uses: actions/upload-artifact@v4
         with:
           name: MFPCrawler-Installer-${{ matrix.formato }}-${{ inputs.customer_name }}
