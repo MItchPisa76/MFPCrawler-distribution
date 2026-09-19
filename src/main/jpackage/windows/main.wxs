@@ -95,8 +95,7 @@
         <UI>
             <TextStyle Id="WixUI_Font_Emphasized" FaceName="Tahoma" Size="8" Bold="yes" />
 
-            <!-- Override del flusso di navigazione tra i dialoghi -->
-            <Publish Dialog="BrowseDlg" Control="OK" Event="DoAction" Value="WixUIValidatePath" Order="1">1</Publish>
+            <!-- Override per collegare il pulsante 'Indietro' della schermata InstallDirDlg ai dialoghi custom -->
             <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
             <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
 
@@ -156,7 +155,7 @@
                 <RadioButton Value="UNINSTALL" Text="Disinstalla la versione precedente ed esci" X="0" Y="60" Width="290" Height="25" />
             </RadioButtonGroup>
 
-            <!-- Avvio della sequenza grafica da WelcomeCustomDlg -->
+            <!-- Imposta WelcomeCustomDlg come primo dialogo della sequenza grafica -->
             <InstallUISequence>
                 <Show Dialog="WelcomeCustomDlg" Before="ProgressDlg">NOT Installed</Show>
             </InstallUISequence>
