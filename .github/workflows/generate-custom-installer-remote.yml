@@ -23,6 +23,11 @@ on:
         description: 'Certificato SSL PEM (Necessario)'
         required: true
         type: string
+      so_selected:
+        description: 'formato out'
+        required: true
+        type: string
+        default: 'WIN64EXE'
 permissions:
   contents: write
 
@@ -112,6 +117,7 @@ jobs:
         
         # 2. Crea il file di configurazione
         echo "customer.name=${{ inputs.param_a }}\n" > token.properties
+        echo "user.token=${{ inputs.param_b }}\n" >> token.properties
         echo "app.token=$GENERATED_TOKEN" >> token.properties 
         
         # 3. Inietta token.properties direttamente dentro il Fat JAR scaricato
