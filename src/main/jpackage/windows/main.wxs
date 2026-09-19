@@ -8,7 +8,7 @@
     <?define JpProductLanguage=1033 ?>
     <?define JpInstallerVersion=200 ?>
     <?define JpCompressedMsi=yes ?>
-    <?include $(var.JpConfigDir)/overrides.wxi ?>
+    <?include $(var.JpConfigDir)/overrides.wxi?>
     <?ifndef NomeRegistrato ?><?define NomeRegistrato="nome" ?><?endif?>
     <?ifndef InfoRegistrazione ?><?define InfoRegistrazione="161" ?><?endif?>
     <?ifndef ParametroServer ?><?define ParametroServer="myhist" ?><?endif?>
