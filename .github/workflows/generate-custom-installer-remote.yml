@@ -165,9 +165,9 @@ jobs:
           
           echo "Creo file src/main/jpackage/windows/overrides.wxi"
           printf '<?xml version="1.0" encoding="utf-8"?>\n<Include>\n' > src/main/jpackage/windows/overrides.wxi
-          printf "   <?define NomeRegistrato=\"${{ inputs.customer_name }}\">\n" >> src/main/jpackage/windows/overrides.wxi
-          printf "   <?define InfoRegistrazione=\"${{ inputs.customer_info }}\">\n">> src/main/jpackage/windows/overrides.wxi
-          printf "   <?define ParametroServer=\"${{ inputs.server_url }}\">\n" >> src/main/jpackage/windows/overrides.wxi
+          printf "   <?define NomeRegistrato=\"${{ inputs.customer_name }}\" ?>\n" >> src/main/jpackage/windows/overrides.wxi
+          printf "   <?define InfoRegistrazione=\"${{ inputs.customer_info }}\" ?>\n">> src/main/jpackage/windows/overrides.wxi
+          printf "   <?define ParametroServer=\"${{ inputs.server_url }}\" ?>\n" >> src/main/jpackage/windows/overrides.wxi
           printf "</Include>\n" >>  src/main/jpackage/windows/overrides.wxi
           cat src/main/jpackage/windows/overrides.wxi
 
