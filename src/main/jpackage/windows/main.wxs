@@ -43,15 +43,40 @@
         <Binary Id="JpCaDll" SourceFile="wixhelper.dll" />
         <CustomAction Id="JpFindRelatedProducts" BinaryKey="JpCaDll" DllEntry="FindRelatedProductsEx" />
         
-        <!-- Definizione della struttura Directory con SystemFolder -->
+        <!-- Struttura delle Directory dell'installer -->
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="SystemFolder" Name="System32" />
+            <Directory Id="ProgramFiles64Folder">
+                <Directory Id="INSTALLDIR" Name="$(var.JpAppName)" />
+            </Directory>
+            <Directory Id="ProgramMenuFolder">
+                <Directory Id="ApplicationProgramsFolder" Name="$(var.JpAppName)" />
+            </Directory>
+            <Directory Id="DesktopFolder" Name="Desktop" />
         </Directory>
+
+        <!-- Collegamenti / Icone nel Menu Start e Desktop -->
+        <DirectoryRef Id="ApplicationProgramsFolder">
+            <Component Id="ApplicationShortcut" Guid="*">
+                <Shortcut Id="ApplicationStartMenuShortcut" Name="$(var.JpAppName)" Description="$(var.JpAppDescription)" Target="[INSTALLDIR]$(var.JpAppName).exe" WorkingDirectory="INSTALLDIR" />
+                <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall" />
+                <RegistryValue Root="HKCU" Key="Software\$(var.JpAppVendor)\$(var.JpAppName)" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
+
+        <DirectoryRef Id="DesktopFolder">
+            <Component Id="ApplicationShortcutDesktop" Guid="*">
+                <Shortcut Id="ApplicationDesktopShortcut" Name="$(var.JpAppName)" Description="$(var.JpAppDescription)" Target="[INSTALLDIR]$(var.JpAppName).exe" WorkingDirectory="INSTALLDIR" />
+                <RegistryValue Root="HKCU" Key="Software\$(var.JpAppVendor)\$(var.JpAppName)" Name="desktop_shortcut" Type="integer" Value="1" KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
         
         <Feature Id="DefaultFeature" Title="!(loc.MainFeatureTitle)" Level="1">
             <ComponentGroupRef Id="Shortcuts" />
             <ComponentGroupRef Id="Files" />
             <ComponentGroupRef Id="FileAssociations" />
+            <ComponentRef Id="ApplicationShortcut" />
+            <ComponentRef Id="ApplicationShortcutDesktop" />
         </Feature>
         
         <CustomAction Id="JpSetARPINSTALLLOCATION" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" />
@@ -66,8 +91,14 @@
         <Property Id="PARAMETRO_SERVER" Value="myhist" />
         <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
         
-        <!-- Custom Action per avviare la disinstallazione esterna senza bloccare il setup -->
+        <!-- Custom Action per la disinstallazione preventiva -->
         <CustomAction Id="CA_UninstallPrevious" Directory="SystemFolder" ExeCommand="msiexec.exe /x [MFPCRAWLER_EXISTING_FOUND] /qb" Return="asyncNoWait" />
+
+        <!-- Custom Action per avviare l'applicazione al termine dell'installazione -->
+        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Avvia $(var.JpAppName) adesso" />
+        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+        <Property Id="WixShellExecTarget" Value="[INSTALLDIR]$(var.JpAppName).exe" />
+        <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
 
         <UIRef Id="WixUI_InstallDir" />
         <UIRef Id="WixUI_ErrorProgressText" />
@@ -91,13 +122,35 @@
             <Custom Action="JpFindRelatedProducts" After="FindRelatedProducts" />
         </InstallUISequence>
 
-        <!-- Configurazione della sequenza dell'Interfaccia Utente Custom -->
+        <!-- Configurazione personalizzata del flusso UI -->
         <UI>
             <TextStyle Id="WixUI_Font_Emphasized" FaceName="Tahoma" Size="8" Bold="yes" />
 
-            <!-- Override per collegare il pulsante 'Indietro' della schermata InstallDirDlg ai dialoghi custom -->
-            <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
-            <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
+            <!-- 1. SOSTITUZIONE WELCOMEDLG STANDARD CON WELCOMECUSTOMDLG -->
+            <!-- Quando l'installer parte, va su WelcomeCustomDlg invece che su WelcomeDlg -->
+            <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="WelcomeCustomDlg">1</Publish>
+            
+            <!-- NAVIGAZIONE DA WelcomeCustomDlg -->
+            <!-- Se esiste un'installazione precedente -> ExistingVersionDlg, altrimenti -> LicenseAgreementDlg -->
+            <Publish Dialog="WelcomeCustomDlg" Control="Next" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
+            <Publish Dialog="WelcomeCustomDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
+
+            <!-- NAVIGAZIONE DA ExistingVersionDlg -->
+            <!-- Avanti va verso LicenseAgreementDlg, Indietro torna a WelcomeCustomDlg -->
+            <Publish Dialog="ExistingVersionDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg">1</Publish>
+
+            <!-- NAVIGAZIONE DA LicenseAgreementDlg -->
+            <!-- Indietro torna a ExistingVersionDlg o a WelcomeCustomDlg in base alla presenza di vecchie installazioni -->
+            <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
+            <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
+            <!-- Avanti passa alla selezione cartella -->
+            <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg">LicenseAccepted = "1"</Publish>
+
+            <!-- NAVIGAZIONE DA InstallDirDlg -->
+            <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="LicenseAgreementDlg">1</Publish>
+
+            <!-- AVVIO APPLICAZIONE SULLA SCHERMATA FINALE -->
+            <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed</Publish>
 
             <!-- DIALOGO 1: WelcomeCustomDlg -->
             <Dialog Id="WelcomeCustomDlg" Width="370" Height="270" Title="!(loc.ShortcutPromptDlg_Title)">
@@ -113,10 +166,7 @@
                 <Control Id="ServerLabel" Type="Text" X="135" Y="108" Width="220" Height="12" Transparent="yes" Text="{\WixUI_Font_Emphasized}Server di destinazione:" />
                 <Control Id="ServerParam" Type="Text" X="135" Y="122" Width="220" Height="15" Transparent="yes" Text="[PARAMETRO_SERVER]" />
 
-                <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
-                    <Publish Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
-                    <Publish Event="NewDialog" Value="InstallDirDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
-                </Control>
+                <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
                 <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
                     <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
                 </Control>
@@ -136,7 +186,7 @@
                 <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
                     <Publish Event="DoAction" Value="CA_UninstallPrevious">EXISTING_ACTION = "UNINSTALL"</Publish>
                     <Publish Event="EndDialog" Value="Exit">EXISTING_ACTION = "UNINSTALL"</Publish>
-                    <Publish Event="NewDialog" Value="InstallDirDlg">EXISTING_ACTION = "UPDATE" OR EXISTING_ACTION = "OVERWRITE"</Publish>
+                    <Publish Event="NewDialog" Value="LicenseAgreementDlg">EXISTING_ACTION = "UPDATE" OR EXISTING_ACTION = "OVERWRITE"</Publish>
                 </Control>
 
                 <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)">
@@ -148,16 +198,15 @@
                 </Control>
             </Dialog>
 
-            <!-- Scelte per RadioButtonGroup -->
             <RadioButtonGroup Property="EXISTING_ACTION">
                 <RadioButton Value="UPDATE" Text="Aggiorna la versione esistente (mantiene le configurazioni)" X="0" Y="0" Width="290" Height="25" />
                 <RadioButton Value="OVERWRITE" Text="Sovrascrivi completamente (sostituisce tutti i file)" X="0" Y="30" Width="290" Height="25" />
                 <RadioButton Value="UNINSTALL" Text="Disinstalla la versione precedente ed esci" X="0" Y="60" Width="290" Height="25" />
             </RadioButtonGroup>
 
-            <!-- Imposta WelcomeCustomDlg come primo dialogo della sequenza grafica -->
+            <!-- Forziamo la WelcomeCustomDlg nell'UISequence dell'installatore -->
             <InstallUISequence>
-                <Show Dialog="WelcomeCustomDlg" Before="ProgressDlg">NOT Installed</Show>
+                <Show Dialog="WelcomeCustomDlg" Before="ExistingVersionDlg">NOT Installed</Show>
             </InstallUISequence>
         </UI>
     </Product>
