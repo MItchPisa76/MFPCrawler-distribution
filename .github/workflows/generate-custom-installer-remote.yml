@@ -161,11 +161,14 @@ jobs:
           
           "$JAVA_HOME/bin/jar" uf target/MFPCrawler-fat.jar token.properties
           echo "Token iniettato con successo."
-          printf '<?xml version="1.0" encoding="utf-8"?>\n<Include>' > overrides.wxi
+          
+          
+          echo "Creato file"
+          printf '<?xml version="1.0" encoding="utf-8"?>\n<Include>' > src/main/jpackage/windows/overrides.wxi
 
-          printf "   <?define NomeRegistrato=\"${{ inputs.customer_name }}\">\n" >> overrides.wxi
-          printf "   <?define InfoRegistrazione=\"${{ inputs.customer_info }}\">\n">> overrides.wxi
-          printf "   <?define ParametroServer=\"${{ inputs.server_url }}\">\n" >> overrides.wxi
+          printf "   <?define NomeRegistrato=\"${{ inputs.customer_name }}\">\n" >> src/main/jpackage/windows/overrides.wxi
+          printf "   <?define InfoRegistrazione=\"${{ inputs.customer_info }}\">\n">> src/main/jpackage/windows/overrides.wxi
+          printf "   <?define ParametroServer=\"${{ inputs.server_url }}\">\n" >> src/main/jpackage/windows/overrides.wxi
           printf "</Include>" >> overrides.wxi
 
 
