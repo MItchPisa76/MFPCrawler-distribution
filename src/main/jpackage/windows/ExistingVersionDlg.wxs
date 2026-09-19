@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Include xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment>
     <UI>
       <Dialog Id="ExistingVersionDlg" Width="370" Height="270"
@@ -51,4 +51,4 @@
       </Dialog>
     </UI>
   </Fragment>
-</Wix>
+</Include>
