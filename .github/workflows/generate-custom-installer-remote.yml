@@ -28,7 +28,7 @@ on:
         required: true
         type: string
       so_selected:
-        description: 'Formato di Output dell\'Installer'
+        description: 'Formato di Output dell''Installer'
         required: true
         type: choice
         default: 'WIN64EXE'
@@ -73,118 +73,113 @@ jobs:
             architecture: x64
             pom: pom-macos.xml
             
-    runs-on: \${{ matrix.os }}
-    if: \${{ matrix.formato == inputs.so_selected }}
+    runs-on: ${{ matrix.os }}
+    if: ${{ matrix.formato == inputs.so_selected }}
 
     defaults:
       run:
-        shell: bash  # Applica Bash come standard per tutti gli step di questo job
+        shell: bash
 
     steps:    
-    - name: Mostra i parametri nei log e nel sommario
-      run: |
-        echo "### 🚀 Parametri di input utilizzati" >> \$GITHUB_STEP_SUMMARY
-        echo "" >> \$GITHUB_STEP_SUMMARY
-        echo "| Parametro | Valore Inserito |" >> \$GITHUB_STEP_SUMMARY
-        echo "| :--- | :--- |" >> \$GITHUB_STEP_SUMMARY
-        echo "| **Target Version** | \`${{ inputs.target_version }}\` |" >> \$GITHUB_STEP_SUMMARY
-        echo "| **Param A (Customer)** | \`${{ inputs.customer_name }}\` |" >> \$GITHUB_STEP_SUMMARY
-        echo "| **Param B (Token ID)** | \`${{ inputs.inputs.customer_info }}\` |" >> \$GITHUB_STEP_SUMMARY
-        echo "| **Token Extra** | \`${{ inputs.token_extra }}\` |" >> \$GITHUB_STEP_SUMMARY
-        echo "| **Server URL** | \`${{ inputs.server_url }}\` |" >> \$GITHUB_STEP_SUMMARY
-        echo "| **Formato OS Target** | \`${{ matrix.formato }}\` |" >> \$GITHUB_STEP_SUMMARY
-        echo "| **File POM Selezionato** | \`${{ matrix.pom }}\` |" >> \$GITHUB_STEP_SUMMARY
-        echo "| **Eseguito da** | @ github.actor |" >> GITHUB_STEP_SUMMARY
+      - name: Mostra i parametri nei log e nel sommario
+        run: |
+          echo "### 🚀 Parametri di input utilizzati" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Parametro | Valore Inserito |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Target Version** | ${{ inputs.target_version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Param A (Customer)** | ${{ inputs.customer_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Param B (Token ID)** | ${{ inputs.customer_info }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Token Extra** | ${{ inputs.token_extra }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Server URL** | ${{ inputs.server_url }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Formato OS Target** | ${{ matrix.formato }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **File POM Selezionato** | ${{ matrix.pom }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Eseguito da** | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
 
-    - name: Controlla repository pubblico
-      uses: actions/checkout@v4
-      with:
-        token: \${{ secrets.GITHUB_TOKEN }}
+      - name: Controlla repository pubblico
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Installa dipendenze per pacchetti RPM (Solo su Linux RPM)
-      if: \${{ matrix.formato == 'LINUXRPM' }}
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y rpm
+      - name: Installa dipendenze per pacchetti RPM (Solo su Linux RPM)
+        if: ${{ matrix.formato == 'LINUXRPM' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm
 
-    - name: Configura Java (Dinamico per versione e architettura)
-      uses: actions/setup-java@v5
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        architecture: \${{ matrix.architecture }}
+      - name: Configura Java (Dinamico per versione e architettura)
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          architecture: ${{ matrix.architecture }}
 
-    - name: Prepara cartella target
-      run: mkdir -p target
+      - name: Prepara cartella target
+        run: mkdir -p target
 
-    - name: Scarica Fat JAR dal Repository Privato
-      env:
-        GH_TOKEN: \${{ secrets.PRIVATE_REPO_PAT }}
-      run: |
-        TAG="\${{ inputs.target_version }}"
-        echo "Download del Fat JAR dalla release \$TAG del repository privato..."
-        
-        gh release download "\$TAG" \
-          --repo "MitchPisa76/MFPCrawler" \
-          --pattern "MFPCrawler-fat.jar" \
-          --dir target/
-              
-    - name: Inietta Certificato SSL
-      run: |
-        CERT_CONTENT="\${{ inputs.ssl_cert }}"
-        if [ -n "\$CERT_CONTENT" ]; then
-          echo "Certificato fornito, iniezione in corso..."
-          mkdir -p src/main/resources/certs
-          echo "\$CERT_CONTENT" > src/main/resources/certs/cert.pem
+      - name: Scarica Fat JAR dal Repository Privato
+        env:
+          GH_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
+        run: |
+          TAG="${{ inputs.target_version }}"
+          echo "Download del Fat JAR dalla release $TAG del repository privato..."
+          gh release download "$TAG" \
+            --repo "MitchPisa76/MFPCrawler" \
+            --pattern "MFPCrawler-fat.jar" \
+            --dir target/
+                
+      - name: Inietta Certificato SSL
+        run: |
+          CERT_CONTENT="${{ inputs.ssl_cert }}"
+          if [ -n "$CERT_CONTENT" ]; then
+            echo "Certificato fornito, iniezione in corso..."
+            mkdir -p src/main/resources/certs
+            echo "$CERT_CONTENT" > src/main/resources/certs/cert.pem
+            cd src/main/resources
+            "$JAVA_HOME/bin/jar" uf ../../../target/MFPCrawler-fat.jar certs/cert.pem
+            echo "Certificato iniettato con successo."
+          else
+            echo "Nessun certificato SSL fornito tramite parametro."
+          fi
+
+      - name: SCRIPT DI INIEZIONE TOKEN
+        run: |
+          PARAM_A="${{ inputs.customer_name }}"
+          PARAM_B="${{ inputs.customer_info }}"
+          RAW_STRING="${PARAM_A}:${PARAM_B}:${{ inputs.token_extra }}"
+          GENERATED_TOKEN=$(echo -n "$RAW_STRING" | base64)
           
-          cd src/main/resources
-          "\$JAVA_HOME/bin/jar" uf ../../../target/MFPCrawler-fat.jar certs/cert.pem
-          echo "Certificato iniettato con successo."
-        else
-          echo "Nessun certificato SSL fornito tramite parametro."
-        fi
+          printf "customer.name=%s\n" "${{ inputs.customer_name }}" > token.properties
+          printf "user.token=%s\n" "${{ inputs.customer_info }}" >> token.properties
+          printf "app.token=%s\n" "$GENERATED_TOKEN" >> token.properties 
+          
+          "$JAVA_HOME/bin/jar" uf target/MFPCrawler-fat.jar token.properties
+          echo "Token iniettato con successo."
 
-    - name: SCRIPT DI INIEZIONE TOKEN
-      run: |
-        PARAM_A="\${{ inputs.customer_name }}"
-        PARAM_B="\${{ inputs.customer_info }}"
-        
-        RAW_STRING="\${PARAM_A}:\({PARAM_B}:\){{ inputs.token_extra }}"
-        GENERATED_TOKEN=(echo -n "RAW_STRING" | base64)
-        
-        # Corretto l'andata a capo nativa cross-platform usando printf
-        printf "customer.name=%s\n" "\${{ inputs.customer_name }}" > token.properties
-        printf "user.token=%s\n" "\${{ inputs.customer_info }}" >> token.properties
-        printf "app.token=%s\n" "\$GENERATED_TOKEN" >> token.properties 
-        
-        "\$JAVA_HOME/bin/jar" uf target/MFPCrawler-fat.jar token.properties
-        echo "Token iniettato con successo."
+      - name: Impacchetta Installer con jpackage e Parametri
+        run: |
+          mvn -f "${{ matrix.pom }}" jpackage:jpackage -X \
+            "-Dinstaller.nomeRegistrato=${{ inputs.customer_name }}" \
+            "-Dinstaller.infoReg=${{ inputs.customer_info }}" \
+            "-Dinstaller.server=${{ inputs.server_url }}"
 
-    - name: Impacchetta Installer con jpackage e Parametri
-      run: |
-        # Invocazione dinamica basata sul POM specifico stabilito dalla matrice
-        mvn -f "\${{ matrix.pom }}" jpackage:jpackage -X \
-          "-Dinstaller.nomeRegistrato=\${{ inputs.customer_name }}" \
-          "-Dinstaller.infoReg=\${{ inputs.customer_info }}" \
-          "-Dinstaller.server=\${{ inputs.server_url }}"
+      - name: Recupera i file temporanei della build
+        uses: actions/upload-artifact@v4
+        with:
+          name: jpackage-temp-files-${{ matrix.formato }}
+          path: int/
+          if-no-files-found: warn
 
-    - name: Recupera i file temporanei della build
-      uses: actions/upload-artifact@v4
-      with:
-        name: jpackage-temp-files-\${{ matrix.formato }}
-        path: int/
-        if-no-files-found: warn
-
-    - name: Carica Installer come Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: MFPCrawler-Installer- matrix.formato -{{ inputs.customer_name }}
-        path: |
-          target/dist/*.exe
-          target/dist/*.msi
-          target/dist/*.deb
-          target/dist/*.rpm
-          target/dist/*.dmg
-        if-no-files-found: error
-        retention-days: 7
+      - name: Carica Installer come Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MFPCrawler-Installer-${{ matrix.formato }}-${{ inputs.customer_name }}
+          path: |
+            target/dist/*.exe
+            target/dist/*.msi
+            target/dist/*.deb
+            target/dist/*.rpm
+            target/dist/*.dmg
+          if-no-files-found: error
+          retention-days: 7
 
