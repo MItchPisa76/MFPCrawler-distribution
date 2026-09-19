@@ -97,11 +97,7 @@
         <Show Dialog="WelcomeCustomDlg" Before="ExecuteAction">NOT Installed</Show>
     </InstallUISequence>
 
-    <!-- 2. GESTIONE DEL TASTO 'Back' IN InstallDirDlg -->
-    <!-- (Se l'utente torna indietro dal dialogo di selezione cartella) -->
-    <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
-    <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
-    
+  
     
     <!-- DIALOGO 1: WelcomeCustomDlg -->
     <Dialog Id="WelcomeCustomDlg" Width="370" Height="270" Title="!(loc.ShortcutPromptDlg_Title)">
