@@ -12,11 +12,17 @@
 
     <name>MFPCrawler</name>
     <description>MFPCrawler Distribution</description>
+
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mtc.extraTag></mtc.extraTag>
+
+        <!-- PARAMETRI PREDEFINITI PER WIX / INSTALLER -->
+        <installer.nomeRegistrato>NONE</installer.nomeRegistrato>
+        <installer.infoReg>Licenza Enterprise</installer.infoReg>
+        <installer.server>http://192.168.1.100:8080</installer.server>        
     </properties>
 
     <build>
@@ -32,43 +38,47 @@
             </plugin>
 
             <!-- jpackage plugin per la creazione dell'installer Windows .exe -->
-           <plugin>
-    <groupId>org.panteleyev</groupId>
-    <artifactId>jpackage-maven-plugin</artifactId>
-    <version>1.7.0</version>
-    <configuration>
-        <name>MFPCrawler</name>
-        <appVersion>${project.version}${mtc.extraTag}</appVersion>
-        <vendor>Mitch Pisa</vendor>
-        <mainClass>mtc.MFPCrawler.MFPCrawler</mainClass>
-        <mainJar>MFPCrawler${mtc.extraTag}-fat.jar</mainJar>
-        <input>target</input>
-        <destination>target/dist</destination>
-        <type>EXE</type>
-        <icon>src/main/resources/icon.ico</icon>
+            <plugin>
+                <groupId>org.panteleyev</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>1.7.0</version>
+                <configuration>
+                    <name>MFPCrawler</name>
+                    <appVersion>${project.version}${mtc.extraTag}</appVersion>
+                    <vendor>Mitch Pisa</vendor>
+                    <mainClass>mtc.MFPCrawler.MFPCrawler</mainClass>
+                    <mainJar>MFPCrawler${mtc.extraTag}-fat.jar</mainJar>
+                    <input>target</input>
+                    <destination>target/dist</destination>
+                    <type>EXE</type>
+                    <icon>src/main/resources/icon.ico</icon>
 
-        <!-- Include l'ambiente Java -->
-        <runtimeImage>${java.home}</runtimeImage>
+                    <!-- Include l'ambiente Java -->
+                    <runtimeImage>${java.home}</runtimeImage>
 
-        <!-- CHIAVE PER L'AGGIORNAMENTO AUTOMATICO -->
-        <!-- Genera un GUID statico (es. da https://www.guidgenerator.com/) e NON cambiarlo mai tra le varie release -->
-        <winUpgradeUuid>7833ab21-31fc-45df-86d2-e2b4be6a1324</winUpgradeUuid>
+                    <!-- CHIAVE PER L'AGGIORNAMENTO AUTOMATICO -->
+                    <winUpgradeUuid>7833ab21-31fc-45df-86d2-e2b4be6a1324</winUpgradeUuid>
 
-        <javaOptions>
-            <option>-Dfile.encoding=UTF-8</option>
-        </javaOptions>
-        <temp>int</temp>
-        <resourceDir>src/main/jpackage/windows</resourceDir>
-        <winMenu>true</winMenu>
-        <winMenuGroup>MFPCrawler</winMenuGroup>
-        <winShortcut>true</winShortcut>
-        <winDirChooser>true</winDirChooser>
-        <winPerUserInstall>false</winPerUserInstall>
-        <winShortcutPrompt>true</winShortcutPrompt>
-        <winConsole>false</winConsole>
-        <verbose>true</verbose>
-    </configuration>
-</plugin>
+                    <!-- Iniezione parametri per la schermata WelcomeCustomDlg -->
+                    <javaOptions>
+                        <option>-Dfile.encoding=UTF-8</option>
+                        <option>-DNOME_REGISTRATO="${installer.nomeRegistrato}"</option>
+                        <option>-DINFO_REGISTRAZIONE="${installer.infoReg}"</option>
+                        <option>-DPARAMETRO_SERVER="${installer.server}"</option>                       
+                    </javaOptions>
+
+                    <temp>int</temp>
+                    <resourceDir>src/main/jpackage/windows</resourceDir>
+                    <winMenu>true</winMenu>
+                    <winMenuGroup>MFPCrawler</winMenuGroup>
+                    <winShortcut>true</winShortcut>
+                    <winDirChooser>true</winDirChooser>
+                    <winPerUserInstall>false</winPerUserInstall>
+                    <winShortcutPrompt>true</winShortcutPrompt>
+                    <winConsole>false</winConsole>
+                    <verbose>true</verbose>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

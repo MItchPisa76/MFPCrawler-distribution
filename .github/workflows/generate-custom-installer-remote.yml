@@ -19,6 +19,10 @@ on:
         description: 'Version Token (es. rev.special)'
         required: false
         default: 'mtc'
+      server_url:
+        description: 'URL Server di Destinazione'
+        required: false
+        default: 'http://192.168.1.100:8080'
       ssl_cert:
         description: 'Certificato SSL PEM (Necessario)'
         required: true
@@ -38,26 +42,18 @@ jobs:
     steps:    
     - name: Mostra i parametri nei log e nel sommario
       run: |
-        # Inizializza o ripulisce il file del sommario scrivendo il titolo iniziale
         "### 🚀 Parametri di input utilizzati" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8
-
-        # Aggiunge l'intestazione della tabella Markdown
         "" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
         "| Parametro | Valore Inserito |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
         "| :--- | :--- |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-
-        # Aggiunge le singole righe con i valori dinamici degli input
         "| **Target Version** | `${{ inputs.target_version }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
         "| **Param A (Customer)** | `${{ inputs.param_a }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
         "| **Param B (Token ID)** | `${{ inputs.param_b }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
         "| **Token Extra** | `${{ inputs.token_extra }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+        "| **Server URL** | `${{ inputs.server_url }}` |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
         "| **Eseguito da** | @${{ github.actor }} |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
         "" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
 
-        # Log di debug tradizionali visibili solo nella console del job
-        Write-Output "Log di debug in console - target_version: ${{ inputs.target_version }}"
-        Write-Output "Log di debug in console - token_extra: ${{ inputs.token_extra }}"
-        Write-Output "Log di debug in console - param_b: ${{ inputs.param_b }}"
     - name: Controlla repository pubblico
       uses: actions/checkout@v4
       with:
@@ -81,13 +77,11 @@ jobs:
         TAG="${{ inputs.target_version }}"
         echo "Download del Fat JAR dalla release $TAG del repository privato..."
         
-        # Download del JAR compiled dal repository privato tramite GitHub CLI
         gh release download "$TAG" \
           --repo "MitchPisa76/MFPCrawler" \
           --pattern "MFPCrawler-fat.jar" \
           --dir target/
 
-    # 1. INIEZIONE CERTIFICATO SSL DA PARAMETRO
     - name: Inietta Certificato SSL se fornito
       shell: bash
       run: |
@@ -97,7 +91,6 @@ jobs:
           mkdir -p src/main/resources/certs
           echo "$CERT_CONTENT" > src/main/resources/certs/cert.pem
           
-          # Inietta il certificato dentro il Fat JAR
           cd src/main/resources
           "$JAVA_HOME/bin/jar" uf ../../../target/MFPCrawler-fat.jar certs/cert.pem
           echo "Certificato iniettato con successo."
@@ -111,28 +104,31 @@ jobs:
         PARAM_A="${{ inputs.param_a }}"
         PARAM_B="${{ inputs.param_b }}"
         
-        # 1. Genera la stringa Base64 combinata
         RAW_STRING="${PARAM_A}:${PARAM_B}:${{ inputs.token_extra }}"
         GENERATED_TOKEN=$(echo -n "$RAW_STRING" | base64)
         
-        # 2. Crea il file di configurazione
         echo "customer.name=${{ inputs.param_a }}\n" > token.properties
         echo "user.token=${{ inputs.param_b }}\n" >> token.properties
         echo "app.token=$GENERATED_TOKEN" >> token.properties 
         
-        # 3. Inietta token.properties direttamente dentro il Fat JAR scaricato
         "$JAVA_HOME/bin/jar" uf target/MFPCrawler-fat.jar token.properties
         
         echo "Token iniettato con successo in target/MFPCrawler-fat.jar"
 
-    - name: Impacchetta Installer .exe con jpackage
-      run: mvn jpackage:jpackage -X
+    - name: Impacchetta Installer .exe con jpackage e Parametri
+      run: |
+        mvn jpackage:jpackage -X `
+          -Dinstaller.nomeRegistrato="${{ inputs.param_a }}" `
+          -Dinstaller.infoReg="${{ inputs.param_b }}" `
+          -Dinstaller.server="${{ inputs.server_url }}"
+
     - name: Recupera i file temporanei della build
       uses: actions/upload-artifact@v4
       with:
         name: jpackage-temp-files
-        path: int/  # Modifica in target/int/ se il plugin lo ha generato dentro target
-        if-no-files-found: warn # Ti 
+        path: int/
+        if-no-files-found: warn
+
     - name: Carica Installer .exe come Artifact
       uses: actions/upload-artifact@v4
       with:

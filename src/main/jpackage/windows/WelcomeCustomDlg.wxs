@@ -3,24 +3,30 @@
   <Fragment>
     <UI>
       <Dialog Id="WelcomeCustomDlg" Width="370" Height="270" Title="!(loc.ShortcutPromptDlg_Title)">
-        <!-- Banner e sfondo standard -->
+        <!-- Immagine di sfondo e linea inferiore -->
         <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="WixUI_Bmp_Dialog" />
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
         
-        <!-- Titoli della pagina Welcome -->
-        <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Benvenuti nell'installazione di MFPCrawler" />
+        <!-- Titolo Principale -->
+        <Control Id="Title" Type="Text" X="135" Y="12" Width="220" Height="30" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Benvenuti nell'installazione di MFPCrawler" />
 
-        <!-- CAMPI PARAMETRI -->
-        <Control Id="HostLabel" Type="Text" X="135" Y="90" Width="80" Height="15" Transparent="yes" Text="Indirizzo Host/IP:" />
-        <Control Id="HostEdit" Type="Edit" X="220" Y="88" Width="120" Height="15" Property="PARAMETRO_HOST" Text="{80}" />
+        <!-- SEZIONE 1: Registrazione -->
+        <Control Id="RegisteredToLabel" Type="Text" X="135" Y="48" Width="220" Height="12" Transparent="yes" Text="{\WixUI_Font_Emphasized}Installazione dedicata per:" />
+        
+        <!-- Nome del registratore (da parametro) -->
+        <Control Id="RegisteredName" Type="Text" X="135" Y="62" Width="220" Height="12" Transparent="yes" Text="[NOME_REGISTRATO]" />
+        
+        <!-- Info aggiuntive (da parametro) -->
+        <Control Id="RegisteredInfo" Type="Text" X="135" Y="76" Width="220" Height="25" Transparent="yes" Text="[INFO_REGISTRAZIONE]" />
 
-        <Control Id="PortaLabel" Type="Text" X="135" Y="115" Width="80" Height="15" Transparent="yes" Text="Porta SNMP:" />
-        <Control Id="PortaEdit" Type="Edit" X="220" Y="113" Width="50" Height="15" Property="PARAMETRO_PORTA" Text="{10}" />
+        <!-- SEZIONE 2: Server di destinazione -->
+        <Control Id="ServerLabel" Type="Text" X="135" Y="108" Width="220" Height="12" Transparent="yes" Text="{\WixUI_Font_Emphasized}Server di destinazione:" />
+        
+        <!-- Indirizzo/Nome Server (da parametro) -->
+        <Control Id="ServerParam" Type="Text" X="135" Y="122" Width="220" Height="15" Transparent="yes" Text="[PARAMETRO_SERVER]" />
 
-        <!-- Pulsanti di Navigazione -->
-        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
-          <Publish Event="NewDialog" Value="InstallDirDlg">1</Publish>
-        </Control>
+        <!-- PULSANTI DI NAVIGAZIONE -->
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
           <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
         </Control>
