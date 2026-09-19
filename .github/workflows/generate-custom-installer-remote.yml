@@ -118,8 +118,8 @@ jobs:
     - name: Impacchetta Installer .exe con jpackage e Parametri
       run: |
         mvn jpackage:jpackage -X `
-          "-Dinstaller.nomeRegistrato=${{ inputs.param_a }}" `
-          "-Dinstaller.infoReg=${{ inputs.param_b }}" `
+          "-Dinstaller.nomeRegistrato=${{ inputs.customer_name }}" `
+          "-Dinstaller.infoReg=${{ inputs.customer_info }}" `
           "-Dinstaller.server=${{ inputs.server_url }}"
 
     - name: Recupera i file temporanei della build
