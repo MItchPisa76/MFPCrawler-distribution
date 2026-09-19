@@ -52,6 +52,7 @@
         <!-- Collegamenti / Icone nel Menu Start e Desktop -->
         <DirectoryRef Id="ApplicationProgramsFolder">
             <Component Id="ApplicationShortcut" Guid="*">
+                <Condition>INSTALLSTARTMENUSHORTCUT = 1</Condition>
                 <Shortcut Id="ApplicationStartMenuShortcut" Name="$(var.JpAppName)" Description="$(var.JpAppDescription)" Target="[INSTALLDIR]$(var.JpAppName).exe" WorkingDirectory="INSTALLDIR" />
                 <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall" />
                 <RegistryValue Root="HKCU" Key="Software\$(var.JpAppVendor)\$(var.JpAppName)" Name="installed" Type="integer" Value="1" KeyPath="yes" />
@@ -60,6 +61,7 @@
 
         <DirectoryRef Id="DesktopFolder">
             <Component Id="ApplicationShortcutDesktop" Guid="*">
+                <Condition>INSTALLDESKTOPSHORTCUT = 1</Condition>
                 <Shortcut Id="ApplicationDesktopShortcut" Name="$(var.JpAppName)" Description="$(var.JpAppDescription)" Target="[INSTALLDIR]$(var.JpAppName).exe" WorkingDirectory="INSTALLDIR" />
                 <RegistryValue Root="HKCU" Key="Software\$(var.JpAppVendor)\$(var.JpAppName)" Name="desktop_shortcut" Type="integer" Value="1" KeyPath="yes" />
             </Component>
@@ -84,6 +86,8 @@
         <Property Id="INFO_REGISTRAZIONE" Value="161" />
         <Property Id="PARAMETRO_SERVER" Value="myhist" />
         <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+        <Property Id="INSTALLDESKTOPSHORTCUT" Value="1" />
+        <Property Id="INSTALLSTARTMENUSHORTCUT" Value="1" />
         
         <!-- Custom Action per la disinstallazione preventiva (Usa la proprietà MFPCRAWLER_EXISTING_FOUND) -->
         <CustomAction Id="CA_UninstallPrevious" Directory="TARGETDIR" ExeCommand="&quot;[SystemFolder]msiexec.exe&quot; /x [MFPCRAWLER_EXISTING_FOUND] /qb" Return="asyncNoWait" />
@@ -114,7 +118,6 @@
 
         <InstallUISequence>
             <Custom Action="JpFindRelatedProducts" After="FindRelatedProducts" />
-            <Show Dialog="WelcomeCustomDlg" Before="ProgressDlg">NOT Installed</Show>
         </InstallUISequence>
 
         <!-- Configurazione personalizzata dell'Interfaccia Utente -->
@@ -123,6 +126,10 @@
 
             <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed</Publish>
 
+            <!-- Flusso: WelcomeDlg (stock) -> WelcomeCustomDlg -> [ExistingVersionDlg] -> License -> InstallDir -> ShortcutPromptDlg -> VerifyReady -->
+            <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="WelcomeCustomDlg" Order="999">NOT Installed</Publish>
+            <Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="ShortcutPromptDlg" Order="999">WIXUI_DONTVALIDATEPATH OR WIXUI_INSTALLDIR_VALID="1"</Publish>
+            <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="ShortcutPromptDlg" Order="999">NOT Installed</Publish>
             <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WelcomeCustomDlg" Order="999">1</Publish>
 
             <!-- DIALOGO 1: WelcomeCustomDlg -->
@@ -142,6 +149,10 @@
                 <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
                     <Publish Event="NewDialog" Value="ExistingVersionDlg">MFPCRAWLER_EXISTING_FOUND</Publish>
                     <Publish Event="NewDialog" Value="LicenseAgreementDlg">NOT MFPCRAWLER_EXISTING_FOUND</Publish>
+                </Control>
+
+                <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)">
+                    <Publish Event="NewDialog" Value="WelcomeDlg">1</Publish>
                 </Control>
 
                 <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
@@ -181,6 +192,29 @@
                 </Control>
             </Dialog>
 
+
+            <!-- DIALOGO 3: ShortcutPromptDlg -->
+            <Dialog Id="ShortcutPromptDlg" Width="370" Height="270" Title="[ProductName] Setup">
+                <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
+                <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+                <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+
+                <Control Id="Title" Type="Text" X="15" Y="6" Width="300" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Collegamenti" />
+                <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes" Text="Scegli quali collegamenti creare." />
+
+                <Control Id="StartMenuCheck" Type="CheckBox" X="30" Y="65" Width="300" Height="18" Property="INSTALLSTARTMENUSHORTCUT" CheckBoxValue="1" Text="Crea un collegamento nel menu Start" />
+                <Control Id="DesktopCheck" Type="CheckBox" X="30" Y="90" Width="300" Height="18" Property="INSTALLDESKTOPSHORTCUT" CheckBoxValue="1" Text="Crea un collegamento sul Desktop" />
+
+                <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)">
+                    <Publish Event="NewDialog" Value="InstallDirDlg">1</Publish>
+                </Control>
+                <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)">
+                    <Publish Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+                </Control>
+                <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+                    <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+                </Control>
+            </Dialog>
         </UI>
     </Product>
 </Wix>
