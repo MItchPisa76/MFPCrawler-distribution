@@ -74,7 +74,7 @@ jobs:
             pom: pom-macos.xml
             
     runs-on: ${{ matrix.os }}
-    if: ${{ matrix.formato == inputs.so_selected }}
+    if: matrix.formato == inputs.so_selected
 
     defaults:
       run:
