@@ -134,7 +134,7 @@ jobs:
             --pattern "MFPCrawler-fat.jar" \
             --dir target/
                 
-      - name: Inietta Certificato SSL
+      - name: Inietta Certificato SSL nel jar
         run: |
           CERT_CONTENT="${{ inputs.ssl_cert }}"
           if [ -n "$CERT_CONTENT" ]; then
@@ -170,11 +170,13 @@ jobs:
         run: |
           PARAM_A="${{ inputs.customer_name }}"
           PARAM_B="${{ inputs.customer_info }}"
-          RAW_STRING="${PARAM_A}:${PARAM_B}:${{ inputs.token_extra }}"
+          RAW_STRING="${PARAM_B}"
           GENERATED_TOKEN=$(echo -n "$RAW_STRING" | base64)
           
           printf "customer.name=%s\n" "${{ inputs.customer_name }}" > token.properties
           printf "user.token=%s\n" "${{ inputs.customer_info }}" >> token.properties
+          printf "user.extra_token=%s\n" "${{ inputs.token_extra }}" >> token.properties
+          printf "user.os=%s\n" "${{ inputs.so_selected }}" >> token.properties
           printf "app.token=%s\n" "$GENERATED_TOKEN" >> token.properties 
           
           "$JAVA_HOME/bin/jar" uf target/MFPCrawler-fat.jar token.properties
