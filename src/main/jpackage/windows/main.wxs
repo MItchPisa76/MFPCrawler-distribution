@@ -102,8 +102,15 @@
         <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Avvia $(var.JpAppName) adesso" />
         <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
         <Property Id="WixShellExecTarget" Value="[INSTALLDIR]$(var.JpAppName).exe" />
-        <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
-
+        
+        <CustomAction Id="LaunchApplicationOLD" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+	
+	<!-- NUOVA CUSTOM ACTION PULITA -->
+	<CustomAction Id="LaunchApplication" 
+              Directory="INSTALLDIR" 
+              ExeCommand="cmd.exe /c start &quot;&quot; &quot;[INSTALLDIR]$(var.JpAppName).exe&quot;" 
+              Return="asyncNoWait" 
+              Impersonate="yes" />
         <UIRef Id="WixUI_Common" />
         <UIRef Id="WixUI_ErrorProgressText" />
         
