@@ -25,7 +25,7 @@
     <?define JpUpgradeVersionOnlyDetectDowngrade="yes"?>
     <?endif?>
     
-    <Product Id="$(var.JpProductCode)" Name="$(var.JpAppName)" Language="$(var.JpProductLanguage)" Version="$(var.JpAppVersion)" Manufacturer="$(var.JpAppVendor)" UpgradeCode="$(var.JpProductUpgradeCode)">
+    <Product Id="*" Name="$(var.JpAppName)" Language="$(var.JpProductLanguage)" Version="$(var.JpAppVersion)" Manufacturer="$(var.JpAppVendor)" UpgradeCode="$(var.JpProductUpgradeCode)">
         <Package Description="$(var.JpAppDescription)" Manufacturer="$(var.JpAppVendor)" InstallerVersion="$(var.JpInstallerVersion)" Compressed="$(var.JpCompressedMsi)" InstallScope="$(var.JpInstallScope)" Platform="x64" />
         <Media Id="1" Cabinet="Data.cab" EmbedCab="yes" />
         <Directory Id="TARGETDIR" Name="SourceDir">
@@ -34,9 +34,9 @@
         </Directory>
         
         <Upgrade Id="$(var.JpProductUpgradeCode)">
-            <UpgradeVersion OnlyDetect="$(var.JpUpgradeVersionOnlyDetectUpgrade)" Property="JP_UPGRADABLE_FOUND" Maximum="$(var.JpAppVersion)" MigrateFeatures="yes" IncludeMaximum="$(var.JpUpgradeVersionOnlyDetectUpgrade)" />
+            <UpgradeVersion OnlyDetect="$(var.JpUpgradeVersionOnlyDetectUpgrade)" Property="JP_UPGRADABLE_FOUND" Maximum="$(var.JpAppVersion)" MigrateFeatures="yes" IncludeMaximum="yes" />
             <UpgradeVersion OnlyDetect="$(var.JpUpgradeVersionOnlyDetectDowngrade)" Property="JP_DOWNGRADABLE_FOUND" Minimum="$(var.JpAppVersion)" MigrateFeatures="yes" IncludeMinimum="$(var.JpUpgradeVersionOnlyDetectDowngrade)" />
-            <!-- Rileva qualsiasi versione di MFPCrawler già installata -->
+            <!-- Rileva qualsiasi versione di MFPCrawler giÃ  installata -->
             <UpgradeVersion OnlyDetect="yes" Property="MFPCRAWLER_EXISTING_FOUND" Minimum="0.0.0.0" IncludeMinimum="yes" />
         </Upgrade>
 
@@ -86,7 +86,7 @@
         <CustomAction Id="JpSetARPCONTACT" Property="ARPCONTACT" Value="$(var.JpAppVendor)" />
         <CustomAction Id="JpSetARPSIZE" Property="ARPSIZE" Value="$(var.JpAppSizeKb)" />
          
-        <!-- Proprietà per la versione esistente e i parametri Custom -->
+        <!-- ProprietÃ  per la versione esistente e i parametri Custom -->
         <Property Id="EXISTING_ACTION" Value="UPDATE" />
         <Property Id="NOME_REGISTRATO" Value="$(var.NomeRegistrato)" />
         <Property Id="INFO_REGISTRAZIONE" Value="$(var.InfoRegistrazione)" />
@@ -95,7 +95,7 @@
         <Property Id="INSTALLDESKTOPSHORTCUT" Value="1" />
         <Property Id="INSTALLSTARTMENUSHORTCUT" Value="1" />
         
-        <!-- Custom Action per la disinstallazione preventiva (Usa la proprietà MFPCRAWLER_EXISTING_FOUND) -->
+        <!-- Custom Action per la disinstallazione preventiva (Usa la proprietÃ  MFPCRAWLER_EXISTING_FOUND) -->
         <CustomAction Id="CA_UninstallPrevious" Directory="TARGETDIR" ExeCommand="&quot;[SystemFolder]msiexec.exe&quot; /x [MFPCRAWLER_EXISTING_FOUND] /qb" Return="asyncNoWait" />
 
         <!-- Custom Action per avviare l'applicazione al termine dell'installazione -->

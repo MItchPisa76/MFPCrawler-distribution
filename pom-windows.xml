@@ -17,12 +17,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mtc.extraTag></mtc.extraTag>
-
-        <!-- PARAMETRI PREDEFINITI PER WIX / INSTALLER -->
-        <installer.nomeRegistrato>NONE</installer.nomeRegistrato>
-        <installer.infoReg>Licenza Enterprise</installer.infoReg>
-        <installer.server>http://192.168.1.100:8080</installer.server>        
+        <mtc.extraTag></mtc.extraTag>      
     </properties>
 
     <build>
@@ -61,10 +56,7 @@
 
                     <!-- Iniezione parametri per la schermata WelcomeCustomDlg -->
                     <javaOptions>
-                        <option>-Dfile.encoding=UTF-8</option>
-                        <option>-DNOME_REGISTRATO="${installer.nomeRegistrato}"</option>
-                        <option>-DINFO_REGISTRAZIONE="${installer.infoReg}"</option>
-                        <option>-DPARAMETRO_SERVER="${installer.server}"</option>                       
+                        <option>-Dfile.encoding=UTF-8</option>                                       
                     </javaOptions>
 
                     <temp>int</temp>
