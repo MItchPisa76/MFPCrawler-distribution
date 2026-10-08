@@ -18,7 +18,8 @@ Seleziona la versione desiderata e clicca il bottone per generare un installer p
 
 | Versione | Stato | Azione |
 | :--- | :--- | :--- |
-| v2.1.0-20.8.26-12.00 | ✅ Disponibile | [![Genera v2.1.0-20.8.26-12.00](https://img.shields.io/badge/Genera%20v2%2E1%2E0-20%2E8%2E26-12%2E00-blue?style=flat-square&logo=githubactions)](https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml) |
+| v3.1.0-8.10.26 | ✅ Disponibile | [![Genera v3.1.0-8.10.26](https://img.shields.io/badge/Genera%20v3%2E1%2E0-8%2E10%2E26-blue?style=flat-square&logo=githubactions)](https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml) |
+| V3.10.8 | ✅ Disponibile | [![Genera V3.10.8](https://img.shields.io/badge/Genera%20V3%2E10%2E8-blue?style=flat-square&logo=githubactions)](https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml) |
 | v2.1.0-20.8.26-12:00 | ✅ Disponibile | [![Genera v2.1.0-20.8.26-12:00](https://img.shields.io/badge/Genera%20v2%2E1%2E0-20%2E8%2E26-12:00-blue?style=flat-square&logo=githubactions)](https://github.com/MItchPisa76/MFPCrawler-distribution/actions/workflows/generate-custom-installer.yml) |
 
 ---
